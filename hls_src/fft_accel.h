@@ -2,11 +2,14 @@
 #include "hls_stream.h"
 #include <stdint.h>
 #include <math.h>
+#include <cstdlib>
+#include <exception>
+#include <memory>
 
 /* ****************************** DEFINES ************************************** */
 
 // #define REVERSAL
-#define NPOINTS  		4096
+#define NPOINTS  		1024
 #define FFTRADIX     	uint8_t(log2(NPOINTS))
 
 #define POW2(casc)      ((1) << casc)

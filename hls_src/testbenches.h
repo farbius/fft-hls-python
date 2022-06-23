@@ -46,6 +46,12 @@ void read_txt(uint32_t *dout)
 		while ( !fpReIn.eof())
 		{
 			fpReIn >> _dout[idx].re_;
+			if(abs(_dout[idx].re_) > 32767)
+			{
+				std::cout << "ERROR REAL INPUT \n";
+				throw std::exception();
+			}
+
 			idx++;
 		}
 		fpReIn.close();
@@ -60,6 +66,12 @@ void read_txt(uint32_t *dout)
 		while ( !fpImIn.eof())
 		{
 			fpImIn >> _dout[idx].im_;
+			if(abs(_dout[idx].im_) > 32767)
+			{
+				std::cout << "ERROR IMAG INPUT \n";
+				throw std::exception();
+			}
+
 			idx++;
 		}
 		fpImIn.close();

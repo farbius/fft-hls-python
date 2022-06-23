@@ -2,8 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-Ampl    = 2**15 - 1
-
+Ampl    = 2**15
 
 
 def revBits(n, no_of_bits):
@@ -24,14 +23,8 @@ def butter_time_int16(x, y, w):
     @return x_t, y_t complex  int16 samples
     """
     y_w = np.round((y * w)/Ampl) # rounding back to 16 bits after multiplication
-    # print(x)
-    # print(y_w)
     y_t = x - y_w
     x_t = x + y_w
-    # print(x_t/2)
-    # print(y_t/2)
-    # exit()
-    
     return x_t/2, y_t/2
 
 
@@ -138,34 +131,39 @@ def main():
     Np = np.size(xcmpx)
     Nstages = int(np.log2(Np))
     Nb      = Nstages
+    
+    u_re    = np.loadtxt("../sim_files/data_nonscl_re.txt", dtype=float)
+    u_im    = np.loadtxt("../sim_files/data_nonscl_im.txt", dtype=float)
+    u       = u_re + 1j*u_im
+    
     print("<< Coefficients initialization")
     wk_16 = coef_init(Np)
     print("<< FFT computing")
-    print("""
-    
-    """)
-    # py_cmpx  = fft_dit(xcmpx, wk_16, 'reversal') # reversal output order
+    # print("""
+    # """)
     py_cmpx  = fft_dit(xcmpx, wk_16, 'normal')     # normal output order
+    uFFT     = np.fft.fft(u) / Np
     
-    
-    # exit()
     print("<< Plotting results")
     plt.figure(num=1, figsize=(10,10))
     
     plt.subplot(211)
-    plt.plot(np.abs(py_cmpx), '.-r', label='PYTHON')
-    plt.plot(np.abs(hw_cmpx), '.-b', label='HLS')
+    plt.plot(20*np.log10(np.abs(uFFT))        , 'x-g', label='Numpy FFT')
+    plt.plot(20*np.log10(np.abs(py_cmpx/Ampl)), 'o-r', label='SW    FFT')
+    plt.plot(20*np.log10(np.abs(hw_cmpx/Ampl)), '.-b', label='HLS   FFT')
     plt.legend()
-    plt.title("FFT {} points".format(Np))
+    plt.title("FFT {} points, RMS quantization level is 6.02*15 + 1.76 = 92.06 dB".format(Np), fontweight="bold", fontsize=14)
     plt.xlabel('bin')
+    plt.ylabel('power, dB')
     plt.grid()
     
 
     
     plt.subplot(212)
     plt.plot(np.abs(py_cmpx) - np.abs(hw_cmpx), '.-r')
-    plt.title("Error")
+    plt.title("SW FFT - HLS FFT", fontweight="bold", fontsize=14)
     plt.xlabel('bin')
+    plt.ylabel('Error')
     plt.grid()
     
     plt.tight_layout()

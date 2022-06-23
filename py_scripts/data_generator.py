@@ -2,6 +2,10 @@ import numpy as np
 import argparse
 import os
 
+Nq      = 15
+# RMS quantization level
+SNR_q   = 6.02*Nq + 1.76
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('Npoints' ,default=None, type=int)
@@ -31,17 +35,21 @@ def main():
         SNR_dB = args.SNR_dB
 
 
-    Ampl     = 2**15 - 1
+    Ampl     = 2**15
     x        = np.zeros(Npoints, dtype=complex)
     for k in range(Nsignals):
-        nbin = -Npoints / Nsignals / 2
-        x   += 10**((SNR_dB - 2*k)/20) * np.exp(2*1j*np.pi*nbin*(k + 1)*np.arange(Npoints)/Npoints)
-    
-    x       += np.random.randn(Npoints) + 1j*np.random.randn(Npoints)
-    x        = x/np.max(np.abs(x))
+        nbin = Npoints * np.random.rand() + 1
+        x   += 10**((SNR_dB - 2*k)/20) * np.exp(2*1j*np.pi*nbin*np.arange(Npoints)/Npoints) + np.random.randn(Npoints)
+    x       *= 10**(-SNR_q/20)
     x_16     = np.round(Ampl*x)
+    
+    
     np.savetxt('../sim_files/data_re.txt', np.real(x_16),fmt='%d')
     np.savetxt('../sim_files/data_im.txt', np.imag(x_16),fmt='%d')
+    
+    # saving non-scaled input signal
+    np.savetxt('../sim_files/data_nonscl_re.txt', np.real(x),fmt='%f')
+    np.savetxt('../sim_files/data_nonscl_im.txt', np.imag(x),fmt='%f')
     
     print('<< Successfully Done')
     
