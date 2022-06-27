@@ -74,6 +74,7 @@ def fft_dit(x, w, d_order='normal'):
             idx_2 = revBits(d + 2**casc, Ns)
             d = d + 1
             Y_int16[casc + 1, idx_1], Y_int16[casc + 1, idx_2] = butter_time_int16(Y_int16[casc, idx_1], Y_int16[casc, idx_2], w[idx_w])
+            # print(" idx_w = {}, idx_1 = {}, idx_2 = {} ".format(idx_w, idx_1, idx_2))
             # if(casc == 2):
                 # print(w[idx_w])
                 # print(idx_w)
@@ -86,13 +87,13 @@ def fft_dit(x, w, d_order='normal'):
             y[k] = np.round(Y_int16[Ns, k])
             
             
-    # print("Re  ")
-    # for k in range(Np):
-        # print("{:5.0f}".format(np.real(Y_int16[2, k])), end = " ")
-    # print(" ")
-    # print("Im ")
-    # for k in range(Np):
-        # print("{:5.0f}".format(np.imag(Y_int16[2, k])), end = " ")
+    print("Re  ")
+    for k in range(Np):
+        print("{:5.0f}".format(np.real(Y_int16[3, k])), end = " ")
+    print(" ")
+    print("Im ")
+    for k in range(Np):
+        print("{:5.0f}".format(np.imag(Y_int16[3, k])), end = " ")
     
     
     # print("""
@@ -143,7 +144,7 @@ def main():
     # """)
     py_cmpx  = fft_dit(xcmpx, wk_16, 'normal')     # normal output order
     uFFT     = np.fft.fft(u) / Np
-    
+    exit()
     print("<< Plotting results")
     plt.figure(num=1, figsize=(10,10))
     
