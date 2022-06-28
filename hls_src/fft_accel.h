@@ -10,7 +10,7 @@
 
 // #define REVERSAL
 #define NPOINTS  		1024
-#define FFTRADIX     	uint8_t(log2(NPOINTS))
+#define FFTRADIX     	10 // uint8_t(log2(NPOINTS))
 
 #define POW2(casc)      ((1) << casc)
 #define W_IDX(idx, casc)(((idx) % POW2(casc)) * (POW2(FFTRADIX - 1 - casc)))
@@ -272,8 +272,8 @@ void wrapped_fft_hw (stream<stream_1ch> &in_stream, stream<stream_1ch> &out_stre
 {
 
 
-	static T     x0[FFTRADIX+1][NPOINTS];
-	static T     w0[NPOINTS];
+	T     x0[FFTRADIX+1][NPOINTS];
+	T     w0[NPOINTS];
 
 	w_init<T, V>(w0);
 
