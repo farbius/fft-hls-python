@@ -87,13 +87,13 @@ def fft_dit(x, w, d_order='normal'):
             y[k] = np.round(Y_int16[Ns, k])
             
             
-    # print("Re  ")
-    # for k in range(Np):
-        # print("{:5.0f}".format(np.real(Y_int16[3, k])), end = " ")
-    # print(" ")
-    # print("Im ")
-    # for k in range(Np):
-        # print("{:5.0f}".format(np.imag(Y_int16[3, k])), end = " ")
+    print("Re  ")
+    for k in range(Np):
+        print("{:5.0f}".format(np.real(Y_int16[1, k])), end = " ")
+    print(" ")
+    print("Im ")
+    for k in range(Np):
+        print("{:5.0f}".format(np.imag(Y_int16[1, k])), end = " ")
     
     
     # print("""
@@ -144,7 +144,7 @@ def main():
     # """)
     py_cmpx  = fft_dit(xcmpx, wk_16, 'normal')     # normal output order
     uFFT     = np.fft.fft(u) / Np
-    # exit()
+    exit()
     print("<< Plotting results")
     plt.figure(num=1, figsize=(10,10))
     

@@ -3,7 +3,7 @@
 
 /* ****************************** DEFINES ************************************** */
 
-// #define CONSOLE // output to console (for few FFT points)
+#define CONSOLE // output to console (for few FFT points)
 #define DIN_RE 	"..\\..\\..\\..\\..\\sim_files\\data_re.txt"
 #define DIN_IM 	"..\\..\\..\\..\\..\\sim_files\\data_im.txt"
 #define DOUT    "..\\..\\..\\..\\..\\sim_files\\dataOUT.txt"
@@ -123,6 +123,7 @@ void test_top()
 
 	cout  << endl << "RUN HARDWARE TEST FOR " << NPOINTS << " FFT points"  << endl;
 	FFT_TOP(src, dst);
+	// NSTAGE_TOP(src, dst, 2);
 	cout  << "DONE!" << endl;
 
 	cmpx_t<int16_t> dout_points[NPOINTS];
