@@ -144,7 +144,7 @@ def main():
     # """)
     py_cmpx  = fft_dit(xcmpx, wk_16, 'normal')     # normal output order
     uFFT     = np.fft.fft(u) / Np
-    exit()
+    
     print("<< Plotting results")
     plt.figure(num=1, figsize=(10,10))
     

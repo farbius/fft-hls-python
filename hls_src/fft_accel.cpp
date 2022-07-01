@@ -14,6 +14,7 @@ void FFT_TOP(stream<stream_1ch> &in_stream, stream<stream_1ch> &out_stream)
 	wrapped_fft_hw <uint32_t, int32_t, int16_t, 4, 1, 1>(in_stream, out_stream);
 }
 
+/*
 
 void NSTAGE_TOP(stream<stream_1ch> &in_stream, stream<stream_1ch> &out_stream, uint8_t casc)
 {
@@ -24,3 +25,4 @@ void NSTAGE_TOP(stream<stream_1ch> &in_stream, stream<stream_1ch> &out_stream, u
 
 	wrapped_n_stage <uint32_t, int32_t, int16_t, 4, 1, 1>(in_stream, out_stream);
 }
+*/

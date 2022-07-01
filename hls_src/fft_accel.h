@@ -49,8 +49,8 @@ using namespace hls;
 /* ****************************** FUNCTIONS DECLARATION *************************** */
 
 void FFT_TOP  	(stream<stream_1ch> &in_stream, stream<stream_1ch> &out_stream);
-void NSTAGE_TOP	(stream<stream_1ch> &in_stream, stream<stream_1ch> &out_stream, uint8_t casc);
-void butter_dit	(uint32_t *x0, uint32_t *y0, uint32_t *w0, uint32_t *x1, uint32_t *y1);
+// void NSTAGE_TOP	(stream<stream_1ch> &in_stream, stream<stream_1ch> &out_stream, uint8_t casc);
+// void butter_dit	(uint32_t *x0, uint32_t *y0, uint32_t *w0, uint32_t *x1, uint32_t *y1);
 
 
 /* ****************************** C++ TEMPLATES ************************************ */
@@ -141,7 +141,7 @@ void butter_dit(T x0, T y0, T w0, T *x1, T *y1)
  */
 uint16_t revBits(uint16_t Addr)
 {
-#pragma HLS INLINE
+// #pragma HLS INLINE
 	uint16_t revAddr = 0;
 	for(uint8_t idx = 0; idx < FFTRADIX; idx ++)
 	{
@@ -151,6 +151,25 @@ uint16_t revBits(uint16_t Addr)
 	}
 
 	return revAddr;
+}
+
+template <typename T>
+void reverse_stage(T x[NPOINTS], T y[NPOINTS])
+{
+	T temp = 0;
+	uint16_t idx_r = 0;
+
+	for(uint16_t idx_d = 0;  idx_d < NPOINTS; idx_d ++)
+	{
+		idx_r = revBits(idx_d);
+		y[idx_r] = x[idx_d];
+		/*if(idx_d <= idx_r)
+		{
+			temp     = x[idx_d];
+			x[idx_d] = x[idx_r];
+			x[idx_r] = temp;
+		}*/
+	}
 }
 
 
@@ -224,11 +243,11 @@ void push_output(stream<stream_1ch> &out_stream,T y[NPTS])
 {
 // #pragma HLS INLINE
 	L10:for(uint16_t idx = 0; idx <  NPTS; idx ++)
-#ifdef REVERSAL
+// #ifdef REVERSAL
 		out_stream.write(write_stream<T, U, TI, TD>(y[idx], (idx == NPTS - 1)));
-#else
-	    out_stream.write(write_stream<T, U, TI, TD>(y[revBits<FFTRADIX>((ap_uint<FFTRADIX>)idx)], (idx == NPTS - 1)));
-#endif
+// #else
+// 	    out_stream.write(write_stream<T, U, TI, TD>(y[revBits<FFTRADIX>((ap_uint<FFTRADIX>)idx)], (idx == NPTS - 1)));
+// #endif
 }
 
 /**
@@ -289,25 +308,7 @@ void n_stage(T x[NPOINTS], T y[NPOINTS], uint8_t casc)
 	}
 }
 
-template <typename T>
-void reverse_stage(T x[NPOINTS], T y[NPOINTS])
-{
-	T temp = 0;
-	uint16_t idx_r = 0;
 
-	for(uint16_t idx_d = 0;  idx_d < NPOINTS; idx_d ++)
-	{
-		idx_r = revBits(idx_d);
-		y[idx_r] = x[idx_d];
-		/*if(idx_d <= idx_r)
-		{
-			temp     = x[idx_d];
-			x[idx_d] = x[idx_r];
-			x[idx_r] = temp;
-		}*/
-	}
-
-}
 
 /**
  *  FFT CORE
@@ -316,18 +317,20 @@ void reverse_stage(T x[NPOINTS], T y[NPOINTS])
 template <typename T, typename U, typename V, int TU, int TI, int TD>
 void wrapped_fft_hw (stream<stream_1ch> &in_stream, stream<stream_1ch> &out_stream)
 {
-// #pragma HLS DATAFLOW
-	T     x[FFTRADIX+1][NPOINTS];
-#pragma HLS ARRAY_PARTITION variable=x dim=1 type=block factor=6
+#pragma HLS DATAFLOW
+	T     mem_bram[FFTRAD_1][NPOINTS];
+#pragma HLS ARRAY_PARTITION variable=mem_bram dim=1 type=block factor=5
+#pragma HLS BIND_STORAGE variable=x type=ram_t2p impl=uram
+	T x[NPOINTS];
 #pragma HLS BIND_STORAGE variable=x type=ram_t2p impl=uram
 
-	pop_input  <T, TU, TI, TD, NPOINTS>( in_stream, x[0]);
-
-	L12:for(uint8_t casc = 0; casc < FFTRADIX; casc ++)
+	pop_input  <T, TU, TI, TD, NPOINTS>( in_stream, x);
+	reverse_stage<T>(x, mem_bram[0]);
+	L222:for(uint8_t casc = 0; casc < FFTRADIX; casc ++)
 #pragma HLS UNROLL
-		n_stage    <T,U,V>(  x[casc], x[casc + 1], casc);
+			n_stage    <T,U,V>(  mem_bram[casc], mem_bram[casc + 1], casc);
 
-	push_output<T, TU, TI, TD, NPOINTS>(out_stream, x[FFTRADIX]);
+	push_output<T, TU, TI, TD, NPOINTS>(out_stream, mem_bram[FFTRADIX]);
 
 }
 
@@ -335,22 +338,24 @@ void wrapped_fft_hw (stream<stream_1ch> &in_stream, stream<stream_1ch> &out_stre
  *
  *
  */
+/*
 template <typename T, typename U, typename V, int TU, int TI, int TD>
 void wrapped_n_stage (stream<stream_1ch> &in_stream, stream<stream_1ch> &out_stream)
 {
 #pragma HLS DATAFLOW
-	T     x[FFTRAD_1][NPOINTS];
-#pragma HLS ARRAY_PARTITION variable=x dim=1 type=block factor=5
+	T     mem_bram[FFTRAD_1][NPOINTS];
+#pragma HLS ARRAY_PARTITION variable=mem_bram dim=1 type=block factor=5
 #pragma HLS BIND_STORAGE variable=x type=ram_t2p impl=uram
-	T resb[NPOINTS];
+	T x[NPOINTS];
 #pragma HLS BIND_STORAGE variable=x type=ram_t2p impl=uram
 
-	pop_input  <T, TU, TI, TD, NPOINTS>( in_stream, resb);
-	reverse_stage<T>(resb, x[0]);
+	pop_input  <T, TU, TI, TD, NPOINTS>( in_stream, x);
+	reverse_stage<T>(x, mem_bram[0]);
 	L222:for(uint8_t casc = 0; casc < FFTRADIX; casc ++)
 #pragma HLS UNROLL
-			n_stage    <T,U,V>(  x[casc], x[casc + 1], casc);
+			n_stage    <T,U,V>(  mem_bram[casc], mem_bram[casc + 1], casc);
 
-	push_output<T, TU, TI, TD, NPOINTS>(out_stream, x[FFTRADIX]);
+	push_output<T, TU, TI, TD, NPOINTS>(out_stream, mem_bram[FFTRADIX]);
 
 }
+*/
