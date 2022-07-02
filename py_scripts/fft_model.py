@@ -50,7 +50,7 @@ def coef_init(Npoints):
     """
     wk_16 = np.zeros(Npoints, dtype='complex')
     for k in range(Npoints):
-        wk_16[k] = np.round(Ampl * np.exp(-1j*2*np.pi*k / Npoints))
+        wk_16[k] = np.round((Ampl-1) * np.exp(-1j*2*np.pi*k / Npoints))
     return wk_16
     
 def fft_dit(x, w, d_order='normal'):
@@ -87,13 +87,13 @@ def fft_dit(x, w, d_order='normal'):
             y[k] = np.round(Y_int16[Ns, k])
             
             
-    print("Re  ")
-    for k in range(Np):
-        print("{:5.0f}".format(np.real(Y_int16[1, k])), end = " ")
-    print(" ")
-    print("Im ")
-    for k in range(Np):
-        print("{:5.0f}".format(np.imag(Y_int16[1, k])), end = " ")
+    # print("Re  ")
+    # for k in range(Np):
+        # print("{:5.0f}".format(np.real(Y_int16[4, revBits(k, Ns)])), end = " ")
+    # print(" ")
+    # print("Im ")
+    # for k in range(Np):
+        # print("{:5.0f}".format(np.imag(Y_int16[4, revBits(k, Ns)])), end = " ")
     
     
     # print("""
@@ -144,7 +144,7 @@ def main():
     # """)
     py_cmpx  = fft_dit(xcmpx, wk_16, 'normal')     # normal output order
     uFFT     = np.fft.fft(u) / Np
-    
+    # exit()
     print("<< Plotting results")
     plt.figure(num=1, figsize=(10,10))
     

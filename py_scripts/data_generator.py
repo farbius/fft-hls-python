@@ -1,6 +1,19 @@
 import numpy as np
 import argparse
 import os
+import sys
+
+
+def coef_init(Npoints):
+    """
+    Twiddling coefficients generation 
+    @param int Npoints:  length of FFT
+    @return wk_16 complex int16 coefficient array
+    """
+    wk_16 = np.zeros(Npoints, dtype='complex')
+    for k in range(Npoints):
+        wk_16[k] = np.round(32767 * np.exp(-1j*2*np.pi*k / Npoints))
+    return wk_16
 
 Nq      = 15
 # RMS quantization level
@@ -50,6 +63,49 @@ def main():
     # saving non-scaled input signal
     np.savetxt('../sim_files/data_nonscl_re.txt', np.real(x),fmt='%f')
     np.savetxt('../sim_files/data_nonscl_im.txt', np.imag(x),fmt='%f')
+    
+    w_cmpx16 = coef_init(Npoints)
+    
+    
+    with open('../hls_src/coef_init.h', 'w') as fp:
+        fp.write('static uint32_t wcoe[] = {')
+        for idx in range(Npoints):
+            w_re = int(np.real(w_cmpx16[idx]))
+            w_im = int(np.imag(w_cmpx16[idx]))
+            fp.write("0x")
+            if w_im >= 0:
+                h_16 = hex(w_im)
+                if   len(h_16) == 2:fp.write('0000')
+                elif len(h_16) == 3:fp.write('000')
+                elif len(h_16) == 4:fp.write('00')
+                elif len(h_16) == 5:fp.write('0')
+                
+                fp.write(h_16[2:])
+            else:
+                w_im = 2**16 - abs(w_im)
+                h_16 = hex(w_im)
+                fp.write(h_16[2:])
+                
+                
+            if w_re >= 0:
+                h_16 = hex(w_re)
+                if   len(h_16) == 2:fp.write('0000')
+                elif len(h_16) == 3:fp.write('000')
+                elif len(h_16) == 4:fp.write('00')
+                elif len(h_16) == 5:fp.write('0')
+                
+                fp.write(h_16[2:])
+            else:
+                w_re = 2**16 - abs(w_re)
+                h_16 = hex(w_re)
+                fp.write(h_16[2:])
+            if(idx < Npoints-1):fp.write(',')
+            if(Npoints-1 > idx > 0):
+                if((np.mod(idx + 1, 8) == 0)):
+                    fp.write("\n")
+                    fp.write("                          ")
+            
+        fp.write("};")
     
     print('<< Successfully Done')
     

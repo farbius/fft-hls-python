@@ -3,7 +3,7 @@
 
 /* ****************************** DEFINES ************************************** */
 
-#define CONSOLE // output to console (for few FFT points)
+// #define CONSOLE // output to console (for few FFT points)
 #define DIN_RE 	"..\\..\\..\\..\\..\\sim_files\\data_re.txt"
 #define DIN_IM 	"..\\..\\..\\..\\..\\sim_files\\data_im.txt"
 #define DOUT    "..\\..\\..\\..\\..\\sim_files\\dataOUT.txt"
@@ -85,6 +85,7 @@ void read_txt(uint32_t *dout)
 
 }
 
+
 void test_top()
 {
 	cout  << endl << "START SIMULATION" << endl;
@@ -123,7 +124,6 @@ void test_top()
 
 	cout  << endl << "RUN HARDWARE TEST FOR " << NPOINTS << " FFT points"  << endl;
 	FFT_TOP(src, dst);
-	// NSTAGE_TOP(src, dst, 2);
 	cout  << "DONE!" << endl;
 
 	cmpx_t<int16_t> dout_points[NPOINTS];
@@ -165,112 +165,5 @@ void test_top()
 
 #endif
 
-
 	cout << endl << "END SIMULATION" << endl << endl;
 }
-
-/*
- *
- *  TESTING BUTTERFLY
- *
- */
-/*void test_but()
-{
-
-	cout << "START SIMULATION" << endl;
-
-	pair<int16_t, int16_t> x_0[NPAIRS], y_0[NPAIRS];
-	pair<int16_t, int16_t> x_1[NPAIRS], y_1[NPAIRS];
-	pair<int16_t, int16_t> w_0;
-
-	w_0  = make_pair((int16_t)rand() % 32767, (int16_t)rand() % 32767);
-
-	cout << " INITIALIZATION " << endl;
-	for (unsigned int k = 0; k < NPAIRS; k ++ )
-	{
-		x_0[k] = make_pair((int16_t)rand() % 32767, (int16_t)rand() % 32767);
-		y_0[k] = make_pair((int16_t)rand() % 32767, (int16_t)rand() % 32767);
-
-		x_1[k] = make_pair(0, 0);
-		y_1[k] = make_pair(0, 0);
-	}
-
-	cout << " SOFTWARE " << endl;
-	for (unsigned int k = 0; k < NPAIRS; k ++ )
-		but_dif_sw<int16_t, int32_t, 15>(x_0[k], y_0[k], w_0, &x_1[k], &y_1[k]);
-
-
-	uint32_t *x0_32[NPAIRS];
-	uint32_t *y0_32[NPAIRS];
-	uint32_t *w0_32 = (uint32_t *) &w_0;
-
-	uint32_t x1_32[NPAIRS];
-    uint32_t y1_32[NPAIRS];
-
-    pair<int16_t, int16_t> x_2[NPAIRS], y_2[NPAIRS];
-
-    for (unsigned int k = 0; k < NPAIRS; k ++ )
-    {
-    	 x0_32[k] = (uint32_t *) &x_0[k];
-    	 y0_32[k] = (uint32_t *) &y_0[k];
-    	 x1_32[k] = 0;
-    	 y1_32[k] = 0;
-    }
-
-    cmpx16_t *x0_cmpx[NPAIRS];
-    cmpx16_t *y0_cmpx[NPAIRS];
-    cmpx16_t *w0_cmpx = (cmpx16_t *) &w_0;
-
-    cmpx16_t x1_cmpx[NPAIRS];
-    cmpx16_t y1_cmpx[NPAIRS];
-
-	for (unsigned int k = 0; k < NPAIRS; k ++ )
-	{
-		 x0_cmpx[k] = (cmpx16_t *) &x_0[k];
-		 y0_cmpx[k] = (cmpx16_t *) &y_0[k];
-		 x1_cmpx[k] = {0, 0};
-		 y1_cmpx[k] = {0, 0};
-	}
-
-    cout << " HARDWARE " << endl;
-    for (unsigned int k = 0; k < NPAIRS; k ++ )
-    	butter_dit(x0_32[k], y0_32[k], w0_32, &x1_32[k], &y1_32[k]);
-    	// butter_dit_0<int16_t, int32_t, 15>(x_0[k], y_0[k], w_0[k], &x_2[k], &y_2[k]);
-
-    uint32_t *x0_G[NPAIRS];
-	uint32_t *y0_G[NPAIRS];
-	for (unsigned int k = 0; k < NPAIRS; k ++ )
-	{
-		 x0_G[k] = (uint32_t *) &x_1[k];
-		 y0_G[k] = (uint32_t *) &y_1[k];
-	}
-
-
-
-    for (unsigned int k = 0; k < NPAIRS; k ++ )
-	{
-		if(*x0_G[k] != x1_32[k])
-		{
-			cout << " x error " << endl;
-			cout << "NOT PASSED " << endl;
-			exit(0);
-		}
-
-		if(*y0_G[k] != y1_32[k])
-		{
-			cout << " y error " << endl;
-			cout << "NOT PASSED " << endl;
-			exit(0);
-		}
-
-	}
-		cout << "PASSED " << endl;
-
-
-
-
-
-	//
-	cout << "END SIMULATION" << endl;
-
-}*/
