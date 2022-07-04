@@ -57,17 +57,27 @@ def main():
     x_16     = np.round(Ampl*x)
     
     
-    np.savetxt('../sim_files/data_re.txt', np.real(x_16),fmt='%d')
-    np.savetxt('../sim_files/data_im.txt', np.imag(x_16),fmt='%d')
+    np.savetxt('../sim_files/scaled_re.txt', np.real(x_16),fmt='%d')
+    np.savetxt('../sim_files/scaled_im.txt', np.imag(x_16),fmt='%d')
     
     # saving non-scaled input signal
-    np.savetxt('../sim_files/data_nonscl_re.txt', np.real(x),fmt='%f')
-    np.savetxt('../sim_files/data_nonscl_im.txt', np.imag(x),fmt='%f')
+    np.savetxt('../sim_files/nonscaled_re.txt', np.real(x),fmt='%f')
+    np.savetxt('../sim_files/nonscaled_im.txt', np.imag(x),fmt='%f')
     
     w_cmpx16 = coef_init(Npoints)
     
     
     with open('../hls_src/coef_init.h', 'w') as fp:
+        fp.write("\n")
+        fp.write("#define NPOINTS   ")
+        fp.write(str(Npoints))
+        fp.write("\n#define FFTRADIX  ")
+        fp.write(str(int(np.log2(Npoints))))
+        fp.write("\n#define FFTRAD_1  ")
+        fp.write(str(int(np.log2(Npoints) + 1)))
+        fp.write("\n")
+        fp.write("\n")
+        fp.write("\n")
         fp.write('static uint32_t wcoe[] = {')
         for idx in range(Npoints):
             w_re = int(np.real(w_cmpx16[idx]))

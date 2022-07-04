@@ -8,11 +8,6 @@
 #include "coef_init.h"
 /* ****************************** DEFINES ************************************** */
 
-#define REVERSAL
-#define NPOINTS  		32
-#define FFTRADIX     	5
-#define FFTRAD_1     	6
-
 #define POW2(casc)      ((1) << casc)
 #define W_IDX(idx, casc)(((idx) % POW2(casc)) * (POW2(FFTRADIX - 1 - casc)))
 
@@ -256,7 +251,7 @@ void wrapped_fft_hw (stream<stream_1ch> &in_stream, stream<stream_1ch> &out_stre
 {
 #pragma HLS DATAFLOW
 	T     mem_bram[FFTRAD_1][NPOINTS];
-#pragma HLS ARRAY_PARTITION variable=mem_bram dim=1 type=block factor=6
+#pragma HLS ARRAY_PARTITION variable=mem_bram dim=1// type=block factor=6
 #pragma HLS BIND_STORAGE variable=mem_bram type=ram_t2p impl=uram
 	T x[NPOINTS];
 #pragma HLS BIND_STORAGE variable=x type=ram_t2p impl=uram

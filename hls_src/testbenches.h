@@ -4,9 +4,9 @@
 /* ****************************** DEFINES ************************************** */
 
 // #define CONSOLE // output to console (for few FFT points)
-#define DIN_RE 	"..\\..\\..\\..\\..\\sim_files\\data_re.txt"
-#define DIN_IM 	"..\\..\\..\\..\\..\\sim_files\\data_im.txt"
-#define DOUT    "..\\..\\..\\..\\..\\sim_files\\dataOUT.txt"
+#define DIN_RE 	"..\\..\\..\\..\\..\\sim_files\\scaled_re.txt"
+#define DIN_IM 	"..\\..\\..\\..\\..\\sim_files\\scaled_im.txt"
+#define DOUT    "..\\..\\..\\..\\..\\sim_files\\cmpx_hls.txt"
 
 using namespace std;
 

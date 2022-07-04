@@ -27,20 +27,6 @@ def butter_time_int16(x, y, w):
     x_t = x + y_w
     return x_t/2, y_t/2
 
-
-
-def butter_freq(x, y, w):
-    """
-    Radix 2 butterfly implementation (decimation-in-time) with rounding to int16 and scaling factor for output
-    @param complex x:  FFT complex point (sample)
-    @param complex y:  FFT complex point (sample)
-    @param complex w:  Complex coefficient
-    @return x_t, y_t  complex samples
-    """
-    y_t = (x - y) * w
-    x_t = (x + y) * 1
-    return x_t, y_t
-
 ## twiddling coefficients
 def coef_init(Npoints):
     """
@@ -53,7 +39,7 @@ def coef_init(Npoints):
         wk_16[k] = np.round((Ampl-1) * np.exp(-1j*2*np.pi*k / Npoints))
     return wk_16
     
-def fft_dit(x, w, d_order='normal'):
+def fft_dit(x, w):
     """
     FFT decimation-in-time implementation 
     @param  complex int16 x: input data
@@ -63,30 +49,24 @@ def fft_dit(x, w, d_order='normal'):
     Np = np.size(x)
     Ns = int(np.log2(Np))
     Y_int16 = np.zeros((Ns + 1, Np), dtype=complex)
-    Y_int16[0, :] = x[:]
+    
+    # reverse input
+    for k in range(Np):
+        Y_int16[0, k] = x[revBits(k, Ns)]
+        
+        
     for casc in range(Ns):
         d = 0
         for k in range(Np // 2):
             idx_w = int(np.mod(k, 2**casc))*2**(Ns - 1 - casc)
             if np.mod(k, 2**casc) == 0:
                 d = 2*k
-            idx_1 = revBits(d, Ns)
-            idx_2 = revBits(d + 2**casc, Ns)
+            idx_1 = d 
+            idx_2 = d + 2**casc
             d = d + 1
             Y_int16[casc + 1, idx_1], Y_int16[casc + 1, idx_2] = butter_time_int16(Y_int16[casc, idx_1], Y_int16[casc, idx_2], w[idx_w])
-            # print(" idx_w = {}, idx_1 = {}, idx_2 = {} ".format(idx_w, idx_1, idx_2))
-            # if(casc == 2):
-                # print(w[idx_w])
-                # print(idx_w)
-    y = np.zeros(Np, dtype=complex)
-    if(d_order=='normal'):
-        for k in range(Np):
-            y[k] = np.round(Y_int16[Ns, revBits(k, Ns)])
-    else:
-        for k in range(Np):
-            y[k] = np.round(Y_int16[Ns, k])
-            
-            
+   
+                
     # print("Re  ")
     # for k in range(Np):
         # print("{:5.0f}".format(np.real(Y_int16[4, revBits(k, Ns)])), end = " ")
@@ -101,19 +81,7 @@ def fft_dit(x, w, d_order='normal'):
     
     # """)
     
-    # print("Re  ")
-    # for k in range(Np):
-        # print("{:5.0f}".format(np.real(Y_int16[3, k])), end = " ")
-    # print(" ")
-    # print("Im ")
-    # for k in range(Np):
-        # print("{:5.0f}".format(np.imag(Y_int16[3, k])), end = " ")
-    
-    # print("""
-    
-    
-    # """)
-    return y
+    return np.round(Y_int16[Ns, :])
 
 
 
@@ -121,20 +89,20 @@ def main():
     print('<< DFT / FFT math modelling')
     print('<< aleksei.rostov@protonmail.com')
     
-    hw      = np.loadtxt("../sim_files/dataOUT.txt", dtype=int)
+    hw      = np.loadtxt("../sim_files/cmpx_hls.txt", dtype=int)
     hw_re   = hw[0::2]
     hw_im   = hw[1::2]
     hw_cmpx = hw_re + 1j*hw_im
     
-    x_re    = np.loadtxt("../sim_files/data_re.txt", dtype=int)
-    x_im    = np.loadtxt("../sim_files/data_im.txt", dtype=int)
+    x_re    = np.loadtxt("../sim_files/scaled_re.txt", dtype=int)
+    x_im    = np.loadtxt("../sim_files/scaled_im.txt", dtype=int)
     xcmpx   = x_re + 1j*x_im
     Np = np.size(xcmpx)
     Nstages = int(np.log2(Np))
     Nb      = Nstages
     
-    u_re    = np.loadtxt("../sim_files/data_nonscl_re.txt", dtype=float)
-    u_im    = np.loadtxt("../sim_files/data_nonscl_im.txt", dtype=float)
+    u_re    = np.loadtxt("../sim_files/nonscaled_re.txt", dtype=float)
+    u_im    = np.loadtxt("../sim_files/nonscaled_im.txt", dtype=float)
     u       = u_re + 1j*u_im
     
     print("<< Coefficients initialization")
@@ -142,7 +110,7 @@ def main():
     print("<< FFT computing")
     # print("""
     # """)
-    py_cmpx  = fft_dit(xcmpx, wk_16, 'normal')     # normal output order
+    py_cmpx  = fft_dit(xcmpx, wk_16)     # normal output order
     uFFT     = np.fft.fft(u) / Np
     # exit()
     print("<< Plotting results")
