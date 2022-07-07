@@ -22,9 +22,13 @@ Folders and files of the repository
 |   +-- fft_accel_tb.cpp
 |   +-- testbenches.cpp
 |
-+-- sim_files\              -- Files for simulation
++-- sim_files\              -- input / output files
 |   |
-|   +-- FFT_DIT_tb.v
+|   +-- cmpx_hls.txt
+|   +-- nonscaled_re.txt
+|   +-- nonscaled_im.txt
+|   +-- scaled_re.txt
+|   +-- scaled_im.txt
 |
 +-- Makefile                -- Makefile for building Vivado HLS project
 |
