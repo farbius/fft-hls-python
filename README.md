@@ -1,16 +1,13 @@
 # RTL (Verilog) fully piplined implementation of integer FFT decimation-in-time algorithm
 Fully piplined and axi-stream compatible implementation of integer FFT decimation-in-time algorithms in Vivado HLS with detailed explanation and math modelling (Python).
 
-
+Explanation can be found [here](https://github.com/farbius/fft-hls-python/tree/main/doc)
 ## Structure of the repository
 Folders and files of the repository
 ```
 +-- doc\   
 |   |
-|   +-- fft-hls-python.md       -- main doc 
-|   +-- 1.md       				-- main doc 
-|   +-- 2.md       				-- main doc 
-|   +-- 3.md       				-- main doc
+|   +-- fft-hls-python.md       -- main documentation 
 |	+-- images\
 |
 +-- py_scripts\   
