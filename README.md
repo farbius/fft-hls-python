@@ -26,10 +26,6 @@ Folders and files of the repository
 |   |
 |   +-- FFT_DIT_tb.v
 |
-+-- tcl/                    -- TCL script for building Vivado HLS project
-|   |
-|   +-- build.tcl
-|
 +-- Makefile                -- Makefile for building Vivado HLS project
 |
 +-- README.md
