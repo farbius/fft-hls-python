@@ -1,9 +1,5 @@
 
-
-
-<div align="center"> 
 # Fast Fourier Transform mathematical modelling and HLS implementation 
-</div>
 
 <div align="right"> PhD, Senior R&D Engineer </div>
 <div align="right"> Aleksei Rostov </div>
