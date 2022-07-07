@@ -122,7 +122,7 @@ testBox.add("jQuery").remove("jQuery");
 
 Image:
 
-![](https://pandao.github.io/editor.md/examples/images/4.jpg)
+![](https://github.com/farbius/fft-hls-python/blob/main/doc/images/three_fft_power_spectrum.png)
 
 > Follow your heart.
 
