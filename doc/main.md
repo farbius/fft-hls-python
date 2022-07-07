@@ -8,7 +8,7 @@
 <div style="text-align: right"> Munich, 2022 </div>
 
 ## Agenda
-1. Theory
-2. Mathematical modelling and SNR explanation
-3. High Level Synthesis implementation with C/C++
+1. [Theory](https://github.com/farbius/fft-hls-python/blob/main/doc/1.md)
+2. [Mathematical modelling and SNR explanation](https://github.com/farbius/fft-hls-python/blob/main/doc/2.md)
+3. [High Level Synthesis implementation with C/C++](https://github.com/farbius/fft-hls-python/blob/main/doc/3.md)
 4. References
