@@ -1,10 +1,12 @@
 
-# Fast Fourier Transform mathematical modelling and HLS implementation 
 
-<div align="right"> PhD, Senior R&D Engineer </div>
-<div align="right"> Aleksei Rostov </div>
-<div align="right"> Munich, 2022 </div>
+<div align="center">
+<b>Fast Fourier Transform mathematical modelling and HLS implementation <b>
+</div>
 
+<div align="right"> <i>PhD, Senior R&D Engineer <i></div>
+<div align="right"> <i>Aleksei Rostov <i></div>
+<div align="right"> <i>Munich, 2022<i> </div>
 
 ## Agenda
 1. [Theory](#theory)
