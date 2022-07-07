@@ -1,79 +1,51 @@
+
+
+
+# Fast Fourier Transform mathematical modelling and HLS implementation
+
+<div style="text-align: right"> PhD, Senior R&D Engineer </div>
+<div style="text-align: right"> Aleksei Rostov </div>
+<div style="text-align: right"> Munich, 2022 </div>
+
+## Agenda
+1. [Theory](#theory)
+2. [Mathematical modelling and SNR explanation](#mathematical modelling and SNR explanation)
+3. [High Level Synthesis implementation with C/C++](#High Level Synthesis implementation with C/C++)
+4. [References](#references)
+
+
+
+
+## Theory
+
+The *Gamma function* satisfying $\Gamma(n) = (n-1)!\quad\forall n\in\mathbb N$ is via the Euler integral
+
+$$
+\Gamma(z) = \int_0^\infty t^{z-1}e^{-t}dt\,.
+$$
+
+> You can find more information about **LaTeX** mathematical expressions [here](http://meta.math.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference).
+
+
+
+
+
+## Mathematical modelling and SNR explanation
+
+And this will produce a flow chart:
+
+```mermaid
+graph LR
+A[Square Rect] -- Link text --> B((Circle))
+A --> C(Round Rect)
+B --> D{Rhombus}
+C --> D
+```
+
+
+
+
 ## High Level Synthesis implementation with C/C++
-
-![](https://pandao.github.io/editor.md/images/logos/editormd-logo-180x180.png)
-
-![](https://img.shields.io/github/stars/pandao/editor.md.svg) ![](https://img.shields.io/github/forks/pandao/editor.md.svg) ![](https://img.shields.io/github/tag/pandao/editor.md.svg) ![](https://img.shields.io/github/release/pandao/editor.md.svg) ![](https://img.shields.io/github/issues/pandao/editor.md.svg) ![](https://img.shields.io/bower/v/editor.md.svg)
-
-
-**Table of Contents**
-
-[TOCM]
-
-[TOC]
-
-#H1 header
-##H2 header
-###H3 header
-####H4 header
-#####H5 header
-######H6 header
-#Heading 1 link [Heading link](https://github.com/pandao/editor.md "Heading link")
-##Heading 2 link [Heading link](https://github.com/pandao/editor.md "Heading link")
-###Heading 3 link [Heading link](https://github.com/pandao/editor.md "Heading link")
-####Heading 4 link [Heading link](https://github.com/pandao/editor.md "Heading link") Heading link [Heading link](https://github.com/pandao/editor.md "Heading link")
-#####Heading 5 link [Heading link](https://github.com/pandao/editor.md "Heading link")
-######Heading 6 link [Heading link](https://github.com/pandao/editor.md "Heading link")
-
-##Headers (Underline)
-
-H1 Header (Underline)
-=============
-
-H2 Header (Underline)
--------------
-
-###Characters
-                
-----
-
-~~Strikethrough~~ <s>Strikethrough (when enable html tag decode.)</s>
-*Italic*      _Italic_
-**Emphasis**  __Emphasis__
-***Emphasis Italic*** ___Emphasis Italic___
-
-Superscript: X<sub>2</sub>，Subscript: O<sup>2</sup>
-
-**Abbreviation(link HTML abbr tag)**
-
-The <abbr title="Hyper Text Markup Language">HTML</abbr> specification is maintained by the <abbr title="World Wide Web Consortium">W3C</abbr>.
-
-###Blockquotes
-
-> Blockquotes
-
-Paragraphs and Line Breaks
-                    
-> "Blockquotes Blockquotes", [Link](http://localhost/)。
-
-###Links
-
-[Links](http://localhost/)
-
-[Links with title](http://localhost/ "link title")
-
-`<link>` : <https://github.com>
-
-[Reference link][id/name] 
-
-[id/name]: http://link-url/
-
-GFM a-tail link @pandao
-
-###Code Blocks (multi-language) & highlighting
-
-####Inline code
-
-`$ npm install marked`
 
 ####Code Blocks (Indented style)
 
@@ -305,3 +277,11 @@ Andrew->>China: I am good thanks!
 ```
 
 ###End
+
+
+
+## References
+
+1. source
+2. source
+3. source
