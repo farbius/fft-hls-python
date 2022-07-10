@@ -2,7 +2,7 @@
 
 
 <div align="center">
-<font size="6">
+<font size="16">
 <b>Fast Fourier Transform mathematical modelling and HLS implementation </b>
 </font>
 </div>
