@@ -2,10 +2,10 @@
 
 
 <div align="center">
-<font size="6">
-<b>Fast Fourier Transform mathematical modelling and HLS implementation <b>
-<font>
-<div>
+</font size="6">
+</b>Fast Fourier Transform mathematical modelling and HLS implementation </b>
+</font>
+</div>
 
 
 <div align="right"> <i>PhD, Senior R&D Engineer </i></div>
