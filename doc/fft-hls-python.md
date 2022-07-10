@@ -38,8 +38,10 @@ By using the periodicity property of   $W_{N}^{kn}$ and the fact that  $W_{N}^{N
 $$X[2]  =x[0] W_{8}^{0} + x[1] W_{8}^{2} - x[2] W_{8}^{0}-x[3] W_{8}^{2} + x[4] W_{8}^{0} + x[5] W_{8}^{2}- x[6] W_{8}^{0} - x[7] W_{8}^{2} \qquad$$
 $$X[3]  =x[0] W_{8}^{0} + x[1] W_{8}^{3} - x[2] W_{8}^{2}+x[3] W_{8}^{1} - x[4] W_{8}^{0} - x[5] W_{8}^{3}+ x[6] W_{8}^{2} - x[7] W_{8}^{1} \qquad$$
 By reducing number of $W_{N}^{kn}$ we may group corresponding pairs of $x[n]$  samples with equal coefficients, that allow to decrease number of multiplications. Also coefficients transformation can be explained by Fig. (1.1)
+
+
 ![](https://github.com/farbius/fft-hls-python/blob/main/doc/images/w_phasor.png)
-<div align="right">
+<div align="center">
 <b>Figure 1.1 </b> Transformation of coefficients
 </div>
 <br/>
