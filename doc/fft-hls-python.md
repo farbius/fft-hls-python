@@ -3,16 +3,16 @@
 
 <div align="center">
 <font size="6">
-<b>Fast Fourier Transform mathematical modelling and HLS implementation <b>
+<b>Fast Fourier Transform mathematical modelling and HLS implementation </b>
 </font>
 </div>
 
 
-<div align="right"> <i>PhD, Senior R&D Engineer <i></div>
-<div align="right"> <i>Aleksei Rostov <i></div>
-<div align="right"> <i>Munich, 2022<i> </div>
+<div align="right"> <i>PhD, Senior R&D Engineer </i></div>
+<div align="right"> <i>Aleksei Rostov </i></div>
+<div align="right"> <i>Munich, 2022</i> </div>
 
-## Agenda
+### Agenda
 1. [Theory](#theory)
 2. [Mathematical modelling and SNR explanation](#mathematical)
 3. [High Level Synthesis implementation with C/C++](#high)
@@ -21,7 +21,7 @@
 
 
 
-## Theory
+### Theory
 Discrete Fourier Transform (DFT) of a finite-length sequence of length *N* is
 $$
 X[k]  =\sum_{n=0}^{N-1}x[n] W_{N}^{kn}, \qquad k = 0,1,...,N-1.\qquad (1.1)
@@ -90,18 +90,18 @@ The batterfly requires only one complex multiplication $W_N^rX_{m-1}[q]$ and $N\
 <br/>
 
 
-## Mathematical modelling and SNR explanation
+### Mathematical modelling and SNR explanation
 
 
 
 
-## High Level Synthesis implementation with C/C++
+### High Level Synthesis implementation with C/C++
 
 
 
 
 
-## References
+### References
 
 1. source
 2. source
