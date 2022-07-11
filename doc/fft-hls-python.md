@@ -8,8 +8,8 @@
 
 ## Agenda
 1. [Theory](#theory)
-2. [Mathematical modelling and SNR explanation](#Mathematical modelling and SNR explanation)
-3. [High Level Synthesis implementation with C/C++](#High Level Synthesis implementation with C/C++)
+2. [Mathematical modelling and SNR explanation](#mathematical modelling and SNR explanation)
+3. [High Level Synthesis implementation with C/C++](#high Level Synthesis implementation with C/C++)
 4. [References](#references)
 
 
