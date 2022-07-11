@@ -39,8 +39,10 @@ $$X[2]  =x[0] W_{8}^{0} + x[1] W_{8}^{2} - x[2] W_{8}^{0}-x[3] W_{8}^{2} + x[4] 
 $$X[3]  =x[0] W_{8}^{0} + x[1] W_{8}^{3} - x[2] W_{8}^{2}+x[3] W_{8}^{1} - x[4] W_{8}^{0} - x[5] W_{8}^{3}+ x[6] W_{8}^{2} - x[7] W_{8}^{1} \qquad$$
 By reducing number of $W_{N}^{kn}$ we may group corresponding pairs of $x[n]$  samples with equal coefficients, that allow to decrease number of multiplications. Also coefficients transformation can be explained by Fig. (1.1)
 
+<p align="center">
+  <img src="https://github.com/farbius/fft-hls-python/blob/main/doc/images/w_phasor.png" alt="w_phasor"/>
+</p>
 
-![](https://github.com/farbius/fft-hls-python/blob/main/doc/images/w_phasor.png)
 <div align="center">
 <b>Figure 1.1 </b> Transformation of coefficients
 </div>
@@ -52,7 +54,6 @@ As seen from Fig. (1.1) , it is enough to compute and store only $N/2$ of coeffi
   <img src="https://github.com/farbius/fft-hls-python/blob/main/doc/images/data_flow.png" alt="data_flow"/>
 </p>
 
-![](https://github.com/farbius/fft-hls-python/blob/main/doc/images/data_flow.png)
 <div align="center">
 <b>Figure 1.2 </b> Flow graph of decomposition and computation of 8-point DTF
 </div>
@@ -61,7 +62,10 @@ As seen from Fig. (1.1) , it is enough to compute and store only $N/2$ of coeffi
 This implementation requires number of multiplications and additions is equal  to $N\log_2N$ , what is significantly less then for direct implementation of DFT $N^2$. The reduction extremelly grows up with the increasing number of DFT points. (Here I'm focused only on decimation-in-time algorithm of FFT, but of course there is amount of other algorithms for implementation FFT).
 FFT implementation consist of $\log_2N$ stages and $N/2$ butterflies for every stage. The butterfly is a unit of FFT that implemets 2-point DFT with  one  $W_{N}^{kn}$ coefficient  Fig. (1.3)
 
-![](https://github.com/farbius/fft-hls-python/blob/main/doc/images/butterfly.png)
+<p align="center">
+  <img src="https://github.com/farbius/fft-hls-python/blob/main/doc/images/butterfly.png" alt="butterfly"/>
+</p>
+
 <div align="center">
 <b>Figure 1.3 </b> Flow graph of basic butterfly computation
 </div>
