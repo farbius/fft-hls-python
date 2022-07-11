@@ -48,6 +48,10 @@ By reducing number of $W_{N}^{kn}$ we may group corresponding pairs of $x[n]$  s
 
 As seen from Fig. (1.1) , it is enough to compute and store only $N/2$ of coefficients. This is the main advantage of periodocity property of $W_{N}^{kn}$. By applying both the symmetry and periodicity property  for coefficients and grouping input data the following dataflow for 8-point DFT computation can be implemented
 
+<p align="center">
+  <img src="https://github.com/farbius/fft-hls-python/blob/main/doc/images/data_flow.png" alt="data_flow"/>
+</p>
+
 ![](https://github.com/farbius/fft-hls-python/blob/main/doc/images/data_flow.png)
 <div align="center">
 <b>Figure 1.2 </b> Flow graph of decomposition and computation of 8-point DTF
