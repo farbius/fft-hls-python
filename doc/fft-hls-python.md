@@ -109,7 +109,7 @@ Summarize the information above, FFT implementation requires (decimation-in-time
 <br/>
 
 
-## Mathematical modelling and SNR explanation
+## Mathematical
 
 
 <p align="justify">
