@@ -8,7 +8,7 @@
 
 ## Agenda
 1. [Theory](#theory)
-2. [Mathematical modelling and SNR explanation](#mathematical)
+2. [Mathematical modelling and SNR explanation](#modelling)
 3. [High Level Synthesis implementation with C/C++](#high)
 4. [References](#references)
 
@@ -109,7 +109,7 @@ Summarize the information above, FFT implementation requires (decimation-in-time
 <br/>
 
 
-## Mathematical
+## Modelling
 
 
 <p align="justify">
