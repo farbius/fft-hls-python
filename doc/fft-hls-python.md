@@ -21,8 +21,10 @@ Discrete Fourier Transform (DFT) of a finite-length sequence of length *N* is
 $$X[k]  =\sum_{n=0}^{N-1}x[n] W_{N}^{kn}, \qquad k = 0,1,...,N-1.\qquad (1.1)$$
 
 where $W_{N}^{kn} = e^{-j(2\pi kn/N)}$.
+
+<p align="justify">
 Direct computation of $X[k]$ requires a total of $N^2$ complex multiplications and $N(N-1)$ complex additions.
-Fast Fourier Transform (FFT)  is *exactly* the same DFT with optimization by reducing number of computations.
+Fast Fourier Transform (FFT)  is <i>exactly</i> the same DFT with optimization by reducing number of computations.
 All optimizations for improving the efficiency of the computation are based on the symmetry and periodicity ptoperties of   $W_{N}^{kn}$, specifically,
 
 $$W_{N}^{k[N - n]} =W_{N}^{-kn} = (W_{N}^{kn})^* \qquad (symmetry ) \qquad (1.2)$$
@@ -37,6 +39,8 @@ By using the periodicity property of   $W_{N}^{kn}$ and the fact that  $W_{N}^{N
 
 $$X[2]  =x[0] W_{8}^{0} + x[1] W_{8}^{2} - x[2] W_{8}^{0}-x[3] W_{8}^{2} + x[4] W_{8}^{0} + x[5] W_{8}^{2}- x[6] W_{8}^{0} - x[7] W_{8}^{2} \qquad$$
 $$X[3]  =x[0] W_{8}^{0} + x[1] W_{8}^{3} - x[2] W_{8}^{2}+x[3] W_{8}^{1} - x[4] W_{8}^{0} - x[5] W_{8}^{3}+ x[6] W_{8}^{2} - x[7] W_{8}^{1} \qquad$$
+
+<p align="justify">
 By reducing number of $W_{N}^{kn}$ we may group corresponding pairs of $x[n]$  samples with equal coefficients, that allow to decrease number of multiplications. Also coefficients transformation can be explained by Fig. (1.1)
 
 <p align="center">
@@ -59,6 +63,7 @@ As seen from Fig. (1.1) , it is enough to compute and store only $N/2$ of coeffi
 </div>
 <br/> 
 
+<p align="justify">
 This implementation requires number of multiplications and additions is equal  to $N\log_2N$ , what is significantly less then for direct implementation of DFT $N^2$. The reduction extremelly grows up with the increasing number of DFT points. (Here I'm focused only on decimation-in-time algorithm of FFT, but of course there is amount of other algorithms for implementation FFT).
 FFT implementation consist of $\log_2N$ stages and $N/2$ butterflies for every stage. The butterfly is a unit of FFT that implemets 2-point DFT with  one  $W_{N}^{kn}$ coefficient  Fig. (1.3)
 
@@ -72,11 +77,14 @@ FFT implementation consist of $\log_2N$ stages and $N/2$ butterflies for every s
 <br/> 
 
 Associated equations for a butterfly from Fig. (1.3)
+
 $$X_m[p] =X_{m-1}[p] + W_N^rX_{m-1}[q]  \qquad (1.4)$$
 $$X_m[q] =X_{m-1}[p] - W_N^rX_{m-1}[q]  \qquad (1.5)$$
+
+<p align="justify">
 The batterfly requires only one complex multiplication $W_N^rX_{m-1}[q]$ and $N\log_2N$ multiplication for computing FFT overall. For example, 8-point FFT requires 24  complex multipliers as can be seen from Fig. (1.2).
 Apart of butterfly calculation it is necessary to reoder input data for the first stage. 
-Reordering involves *bit-reversal* algorithm, when every bit of input data index binary form is reversed. For example, indexes for  $N = 8$ will be reorder like
+Reordering involves <i>bit-reversal</i> algorithm, when every bit of input data index binary form is reversed. For example, indexes for  $N = 8$ will be reorder like
 
 | Normal Index| Binary form of normal index |Binary form of reserved index|Reserved index|
 | :-: | :-:| :-:| :-:|
