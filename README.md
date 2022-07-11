@@ -12,7 +12,7 @@ Folders and files of the repository
 |
 +-- py_scripts\   
 |   |
-|   +-- data_generator.py   -- data generator for RTL simulation and fft_model.py
+|   +-- signal_generator.py -- complex data generator for RTL simulation and fft_model.py
 |   +-- fft_model.py        -- math model of FFT DIT algorithm for int16
 |
 +-- hls_src\                -- Vivado HLS sources
@@ -20,7 +20,7 @@ Folders and files of the repository
 |   +-- fft_accel.cpp
 |   +-- fft_accel.h
 |   +-- fft_accel_tb.cpp
-|   +-- testbenches.cpp
+|   +-- testbenches.h
 |
 +-- sim_files\              -- input / output files
 |   |

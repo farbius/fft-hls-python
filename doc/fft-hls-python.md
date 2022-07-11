@@ -75,6 +75,26 @@ Associated equations for a butterfly from Fig. (1.3)
 $$X_m[p] =X_{m-1}[p] + W_N^rX_{m-1}[q]  \qquad (1.4)$$
 $$X_m[q] =X_{m-1}[p] - W_N^rX_{m-1}[q]  \qquad (1.5)$$
 The batterfly requires only one complex multiplication $W_N^rX_{m-1}[q]$ and $N\log_2N$ multiplication for computing FFT overall. For example, 8-point FFT requires 24  complex multipliers as can be seen from Fig. (1.2).
+Apart of butterfly calculation it is necessary to reoder input data for the first stage. 
+Reordering involves *bit-reversal* algorithm, when every bit of input data index binary form is reversed. For example, indexes for  $N = 8$ will be reorder like
+
+| Normal Index| Binary form of normal index |Binary form of reserved index|Reserved index|
+| :-: | :-:| :-:| :-:|
+| 0 | 000 | 000 | 0 |
+| 1 | 001 | 100 | 4 |
+| 2 | 010 | 010 | 2 |
+| 3 | 011 | 110 | 6 |
+| 4 | 100 | 001 | 1 |
+| 5 | 101 | 101 | 5 |
+| 6 | 110 | 011 | 3 |
+| 7 | 111 | 111 | 7 |
+
+
+
+Summarize the information above, FFT implementation requires (decimation-in-time Cooley–Tukey FFT algorithm):
+1. butterfly for complex multiplication on every stage
+1. set of complex coefficients
+1. input signal reodering
 
 
 
@@ -83,6 +103,41 @@ The batterfly requires only one complex multiplication $W_N^rX_{m-1}[q]$ and $N\
 
 ## Mathematical modelling and SNR explanation
 
+
+<p align="justify">
+Mathematical modelling of FFT allows to figure out <i>hardware design</i> of the algorithm and proof outputs during HLS Co-Simulation. 
+<p align="justify">
+For mathematical modelling two Python scripts were created: <i>signal_generator.py</i> and <i>fft_model.py</i>.  First script generates a synthetic complex signal for HLS testbench and header <i>coef_init.h</i> file for initialization of HLS FFT implementation. The script may be launching with, for example,the following arguments
+
+ 
+```sh
+python3 signal_generator.py 1024 3 40
+```
+what means - the synthetic signal consist of 1024 samples and is composed from 3 signals with Signal-To-Noise ratios 40 dB, 38 dB, 36 dB. 
+Code for parsing of the arguments is 
+
+```sh
+parser.add_argument('Npoints' ,default=None, type=int)
+parser.add_argument('Nsignals',default=None, type=int)
+parser.add_argument('SNR_dB'  ,default=None, type=int)
+```
+<p align="justify">
+where <i>Npoints</i>  is a number of FFT points, 
+<i>Nsignals</i> - is an amount of harmonics with random frequencies in the synthetic signal and 
+<i>SNR_dB</i> - is a max value of Signal-To-Noise ratio of the first harmonic in the synthetic signal, SNR of other harmonics will be decreased on 2 dB for every one.
+
+The <i>signal_generator.py</i> script will generate several files:
+```sh
+nonscaled_re.txt  
+nonscaled_im.txt
+scaled_re.txt
+scaled_im.txt
+coef_init.h
+```
+<p align="justify">
+Header <i>coef_init.h</i> consist of FFT parameters and coefficients and is designed for HLS FFT implementation. 
+Files <i>nonscaled_.txt</i> are complex float point input for Numpy FFT implementation, that will be used for comparison with HLS FFT implementation. 
+Files <i>scaled_.txt</i> are scaled to 16-bit signed register complex input for HLS FFT.
 
 
 
