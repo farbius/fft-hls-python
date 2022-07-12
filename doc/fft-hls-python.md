@@ -9,7 +9,7 @@
 ## Agenda
 1. [Theory](#theory)
 2. [Mathematical modelling](#mathematical-modelling)
-3. [High Level Synthesis implementation with C/C++](#high-level-synthesis-implementation-with-C/C++)
+3. [High Level Synthesis implementation with C/C++](#high-level-synthesis-implementation)
 4. [References](#references)
 
 
@@ -108,7 +108,7 @@ Summarize the information above, FFT implementation requires (decimation-in-time
 
 <br/>
 
-## Mathematical modelling
+## Mathematical Modelling
 
 
 <p align="justify">
@@ -182,7 +182,7 @@ Noise floor reduction in FFT is caused by narrow-bandness  of FFT itself [1].
 
 
 
-## High Level Synthesis implementation with C/C++
+## High Level Synthesis Implementation
 
 
 
