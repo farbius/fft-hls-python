@@ -132,7 +132,7 @@ where <i>Npoints</i>  is a number of FFT points,
 <i>Nsignals</i> - is an amount of harmonics with random frequencies in the synthetic signal and <i>SNR_dB</i> - is a max value of Signal-To-Noise ratio of the first harmonic in the synthetic signal, SNR of other harmonics will be decreased on 2 dB for every one.
 Mathematical model of the complex synthetic signal is
 
-$$x_k[n] = 10^{(SNR_{dB}-2*k)/20}e^{-j*2*\pi*f_k*n/Npoints} + n_k[n] \qquad (2.1)$$
+$$x_k[n] = 10^{(SNR_{dB}-2*k)/20}e^{-j2\pi f_k n/Npoints} + n_k[n] \qquad (2.1)$$
 <p align="justify">
 where <i>n = 0 ... Npoints-1</i> - signal's sample, <i>k = 0 ... Nsignals-1</i> - harmonic's number, <i>n_k</i> - random noise for every harmonic.
 Frequency meaning <i>f_k</i> of harmonic  is choosen randomly and a power is decreased for every harmonic on 2 dB.
