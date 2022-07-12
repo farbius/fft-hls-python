@@ -190,6 +190,6 @@ Noise floor reduction in FFT is caused by narrow-bandness  of FFT itself [1].
 
 ## References
 
-1. [W. Kester, Understand SINAD, ENOB, SNR, THD, THD + N, and SFDR so You Don't Get Lost in the Noise Floor, Analog Devices, 2008] (https://www.analog.com/media/en/training-seminars/tutorials/MT-003.pdf)
+1. [W. Kester, Understand SINAD, ENOB, SNR, THD, THD + N, and SFDR so You Don't Get Lost in the Noise Floor, Analog Devices, 2008](https://www.analog.com/media/en/training-seminars/tutorials/MT-003.pdf)
 2. source
 3. source
