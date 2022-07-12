@@ -8,8 +8,8 @@
 
 ## Agenda
 1. [Theory](#theory)
-2. [Mathematical modelling and SNR explanation](#modelling)
-3. [High Level Synthesis implementation with C/C++](#high)
+2. [Mathematical modelling](#mathematical-modelling)
+3. [High Level Synthesis implementation with C/C++](#high-level-synthesis-implementation-with-C/C++)
 4. [References](#references)
 
 
@@ -108,21 +108,19 @@ Summarize the information above, FFT implementation requires (decimation-in-time
 
 <br/>
 
-
-## Modelling
+## Mathematical modelling
 
 
 <p align="justify">
 Mathematical modelling of FFT allows to figure out <i>hardware design</i> of the algorithm and proof outputs during HLS Co-Simulation. 
-<p align="justify">
+<br>
 For mathematical modelling two Python scripts were created: <i>signal_generator.py</i> and <i>fft_model.py</i>.  First script generates a synthetic complex signal for HLS testbench and header <i>coef_init.h</i> file for initialization of HLS FFT implementation. The script may be launching with, for example,the following arguments
 
- 
 ```sh
 python3 signal_generator.py 1024 3 40
 ```
 what means - the synthetic signal consist of 1024 samples and is composed from 3 signals with Signal-To-Noise ratios 40 dB, 38 dB, 36 dB. 
-Code for parsing of the arguments is 
+Code for parsing the arguments is 
 
 ```sh
 parser.add_argument('Npoints' ,default=None, type=int)
@@ -131,10 +129,18 @@ parser.add_argument('SNR_dB'  ,default=None, type=int)
 ```
 <p align="justify">
 where <i>Npoints</i>  is a number of FFT points, 
-<i>Nsignals</i> - is an amount of harmonics with random frequencies in the synthetic signal and 
-<i>SNR_dB</i> - is a max value of Signal-To-Noise ratio of the first harmonic in the synthetic signal, SNR of other harmonics will be decreased on 2 dB for every one.
+<i>Nsignals</i> - is an amount of harmonics with random frequencies in the synthetic signal and <i>SNR_dB</i> - is a max value of Signal-To-Noise ratio of the first harmonic in the synthetic signal, SNR of other harmonics will be decreased on 2 dB for every one.
+Mathematical model of the complex synthetic signal is
 
-The <i>signal_generator.py</i> script will generate several files:
+$$x_k[n] = 10^{(SNR_{dB}-2*k)/20}e^{-j*2*\pi*f_k*n/Npoints} + n_k[n] \qquad (2.1)$$
+<p align="justify">
+where <i>n = 0 ... Npoints-1</i> - signal's sample, <i>k = 0 ... Nsignals-1</i> - harmonic's number, <i>n_k</i> - random noise for every harmonic.
+Frequency meaning <i>f_k</i> of harmonic  is choosen randomly and a power is decreased for every harmonic on 2 dB.
+<br>
+After calculation in Eq. (2.1) the amplitude of synthetic sum signal is scaled to <i>-1 ... +1</i> and <i>-32768 ... +32768</i> and samples are saved to files.
+<br>
+The script will generate several files:
+
 ```sh
 nonscaled_re.txt  
 nonscaled_im.txt
@@ -143,9 +149,36 @@ scaled_im.txt
 coef_init.h
 ```
 <p align="justify">
-Header <i>coef_init.h</i> consist of FFT parameters and coefficients and is designed for HLS FFT implementation. 
+Header <i>coef_init.h</i> consist of FFT parameters and scaled to  <i>-32768 ... +32768</i> coefficients. The header file is used by HLS FFT implementation. 
 Files <i>nonscaled_.txt</i> are complex float point input for Numpy FFT implementation, that will be used for comparison with HLS FFT implementation. 
 Files <i>scaled_.txt</i> are scaled to 16-bit signed register complex input for HLS FFT.
+<br>
+The <i>fft_model.py</i> python script consists of scaled to 16-bits signed register implementation of FFT and FFT from Numpy package. The script reads out <i>scaled_.txt</i> and <i>nonscaled_.txt</i> data, output <i>cmpx_hls.txt</i> from HLS Co-simulation and plots results of three FFT. 
+<br>
+Result for <i>python3 signal_generator.py 1024 3 40</i> is depicted on Fig. (2.1)
+
+
+<p align="center">
+  <img src="https://github.com/farbius/fft-hls-python/blob/main/doc/images/fft_snr.png" alt="butterfly"/>
+</p>
+
+<div align="center">
+<b>Figure 2.1 </b> Results of Numpy, Python and HLS FFT implementation
+</div>
+<br/> 
+<p align="justify">
+First plot is a power of FFT output implemented in Numpy (green), Python (red) and HLS Co-simulation (blue). Since Python and HLS implementation is scaled to 16-bit signed register, thir nois floor is restricted by Root Means Square (RMS) value, that depends on length of a register. In case of 16-bit signed register, minimum level of power spectrum can be 
+
+$$SNR_{RMS} = 6.02 * 15 + 1.76 = 92.06 \  dB$$
+
+<p align="justify">
+FFT itself without scaling, expands power spectrum range on value 
+
+$$SNR_{FFT} = 10*\log_{10}(Npoints)  \  dB$$
+
+<p align="justify">
+Noise floor reduction in FFT is caused by narrow-bandness  of FFT itself [1].
+
 
 
 
@@ -157,6 +190,6 @@ Files <i>scaled_.txt</i> are scaled to 16-bit signed register complex input for 
 
 ## References
 
-1. source
+1. (W. Kester, Understand SINAD, ENOB, SNR, THD, THD + N, and SFDR so You Don't Get Lost in the Noise Floor, Analog Devices, 2008) (https://www.analog.com/media/en/training-seminars/tutorials/MT-003.pdf)
 2. source
 3. source

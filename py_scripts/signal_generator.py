@@ -51,18 +51,21 @@ def main():
     Ampl     = 2**15
     x        = np.zeros(Npoints, dtype=complex)
     for k in range(Nsignals):
-        nbin = Npoints * np.random.rand() + 1
-        x   += 10**((SNR_dB - 2*k)/20) * np.exp(2*1j*np.pi*nbin*np.arange(Npoints)/Npoints) + np.random.randn(Npoints)
-    x       *= 10**(-SNR_q/20)
-    x_16     = np.round(Ampl*x)
+        nbin = Npoints // 8 * (k + 1)
+        x   += 10**((SNR_dB - 5*k)/20) * np.exp(2*1j*np.pi*nbin*np.arange(Npoints)/Npoints) + np.random.randn(Npoints) # 
     
+    x       *= 10**(-SNR_q/20)
+    # saving non-scaled input signal
+    np.savetxt('../sim_files/nonscaled_re.txt', np.real(x),fmt='%f')
+    np.savetxt('../sim_files/nonscaled_im.txt', np.imag(x),fmt='%f')
+    
+    
+    x_16     = np.round(Ampl*x)
     
     np.savetxt('../sim_files/scaled_re.txt', np.real(x_16),fmt='%d')
     np.savetxt('../sim_files/scaled_im.txt', np.imag(x_16),fmt='%d')
     
-    # saving non-scaled input signal
-    np.savetxt('../sim_files/nonscaled_re.txt', np.real(x),fmt='%f')
-    np.savetxt('../sim_files/nonscaled_im.txt', np.imag(x),fmt='%f')
+    
     
     w_cmpx16 = coef_init(Npoints)
     

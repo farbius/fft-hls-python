@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 
 
 Ampl    = 2**15
+Nq      = 15
+# RMS quantization level
+SNR_q   = 6.02*Nq + 1.76
 
 
 def revBits(n, no_of_bits):
@@ -120,8 +123,10 @@ def main():
     plt.plot(20*np.log10(np.abs(uFFT))        , 'x-g', label='Numpy FFT')
     plt.plot(20*np.log10(np.abs(py_cmpx/Ampl)), 'o-r', label='SW    FFT')
     plt.plot(20*np.log10(np.abs(hw_cmpx/Ampl)), '.-b', label='HLS   FFT')
+    plt.plot(-SNR_q*np.ones(Np), '--m', label='RMS quantization level')
+    plt.plot((-SNR_q - 10*np.log10(Np))*np.ones(Np), '--k', label='FFT noise floor')
     plt.legend()
-    plt.title("FFT {} points, RMS quantization level is 6.02*15 + 1.76 = 92.06 dB".format(Np), fontweight="bold", fontsize=14)
+    plt.title("FFT {} points, RMS quantization level is 92.06 dB, FFT noise floor is {:3.2f} dB".format(Np, SNR_q + 10*np.log10(Np)), fontweight="bold", fontsize=14)
     plt.xlabel('bin')
     plt.ylabel('power, dB')
     plt.grid()
