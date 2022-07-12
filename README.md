@@ -4,7 +4,7 @@ Fully piplined and axi-stream compatible implementation of integer FFT decimatio
 Explanation
 
 1. [Theory](./doc/fft-hls-python.md#theory)
-2. [Mathematical modelling](./doc/fft-hls-python.md#mathematical-modelling)
+2. [Mathematical Modelling](./doc/fft-hls-python.md#mathematical-modelling)
 3. [High Level Synthesis implementation with C/C++](./doc/fft-hls-python.md#high-level-synthesis-implementation)
 4. [References](./doc/fft-hls-python.md#references)
 
