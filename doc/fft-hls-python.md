@@ -8,7 +8,7 @@
 
 ## Agenda
 1. [Theory](#theory)
-2. [Mathematical modelling](#mathematical-modelling)
+2. [Mathematical Modelling](#mathematical-modelling)
 3. [High Level Synthesis implementation with C/C++](#high-level-synthesis-implementation)
 4. [References](#references)
 
