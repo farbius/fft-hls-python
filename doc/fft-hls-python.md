@@ -175,9 +175,48 @@ $$SNR_{RMS} = 6.02 * 15 + 1.76 = 92.06 \  dB$$
 FFT itself without scaling, expands power spectrum range on value 
 
 $$SNR_{FFT} = 10*\log_{10}(Npoints)  \  dB$$
-
 <p align="justify">
-Noise floor reduction in FFT is caused by narrow-bandness  of FFT itself [1].
+Noise floor reduction in FFT is caused by narrow-bandness  of FFT itself [1]. For demonstration the noise floor reduction, let's consider two noise 1024-points  signals with amplitude 0 dB and -20 dB in the following Python script
+
+```sh
+import numpy as np
+import matplotlib.pyplot as plt
+
+Npoints = 1024
+SNR_1 = 0
+SNR_2 = -20
+
+n_1 = 10**(SNR_1/20)*np.random.randn(Npoints)
+n_2 = 10**(SNR_2/20)*np.random.randn(Npoints)
+
+# normalized Numpy FFT 
+nf_1 = np.abs(np.fft.fft(n_1)/Npoints)
+nf_2 = np.abs(np.fft.fft(n_2)/Npoints)
+
+plt.figure()
+plt.plot(20*np.log10(nf_1), '.-r', label='nf_1 SNR = 0 dB')
+plt.plot(20*np.log10(nf_2), '.-b', label='nf_2 SNR = -20 dB')
+plt.title("FFT {} points, FFT noise floor is {:3.2f} dB".format(Npoints, 10*np.log10(Npoints)), fontweight="bold", fontsize=14)
+plt.legend(loc='upper right')
+plt.grid()
+plt.xlabel('bin')
+plt.ylabel('power, dB')
+plt.show()
+```
+
+<p align="center">
+  <img src="https://github.com/farbius/fft-hls-python/blob/main/doc/images/fft_floor_snr.png" alt="butterfly"/>
+</p>
+
+<div align="center">
+<b>Figure 2.2 </b> FFT noise floor reduction
+</div>
+<br/> 
+<p align="justify">
+As can be seen from Fig. (2.2)  noise floor was moved on 30 dB since 1024-point FFT was applied (30 dB).
+<br>
+<p align="justify">
+Second plot in Fig. (2.1) is a result of comparison Python FFT implementation and HLS Co-simulation output. The small error is caused by rounding operation during FFT computation. 
 
 
 
