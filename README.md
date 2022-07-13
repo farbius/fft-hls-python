@@ -43,15 +43,15 @@ Folders and files of the repository
 +-- LICENSE
 ```
 
-How to work with repository
+How to work with the repository
 
 1. Create synthetic signal with the <i>signal_generator.py</i> script (explained [here](./doc/fft-hls-python.md#mathematical-modelling))
 
 ```sh
-python3 signal_generator.py 1024 3 40
+python3 py_scripts/signal_generator.py 1024 3 40
 ```
 
-2. In repo root directory run <i>make</i> command for building and launching Vivado HLS project
+2. In the repository root directory run <i>make</i> command for building and launching Vivado HLS project
 
 ```sh
 make
@@ -60,5 +60,5 @@ make
 3. Run <i>fft_model.py</i> script for cheking Vivado HLS simulation result
 
 ```sh
-python3 fft_model.py
+python3 py_scripts/fft_model.py
 ```
