@@ -1,16 +1,17 @@
-BUILD_FILE_NAME=build/board
-
+BUILD_FILE_NAME=fft_accel
 all: create_proj
 
 
 create_proj: $(BUILD_FILE_NAME)
 
 $(BUILD_FILE_NAME):
-	echo create build exists file
+	@echo "Create build folder"
 	mkdir -p build
-	echo $PWD
-	vivado_hls -f build_hls.tcl
-	# vivado -nolog -nojournal -mode batch -source ./tcl/build.tcl
+	@echo $(PWD)
+	@echo "Copy files"
+	cp -f $(PWD)/tcl/run_hls.tcl $(PWD)/build
+	@echo "go to build dir"
+	cd $(PWD)/build	&&	vivado_hls -f run_hls.tcl	&&	vivado_hls -p $(BUILD_FILE_NAME)
 
 clean:
 	rm -rf build
