@@ -28,16 +28,21 @@ Fast Fourier Transform (FFT)  is <i>exactly</i> the same DFT with optimization b
 All optimizations for improving the efficiency of the computation are based on the symmetry and periodicity ptoperties of   $W_{N}^{kn}$, specifically,
 
 $$W_{N}^{k[N - n]} =W_{N}^{-kn} = (W_{N}^{kn})^* \qquad (symmetry ) \qquad (1.2)$$
+
+
 $$W_{N}^{kn} =W_{N}^{k(n+N)} = W_{N}^{(k+N)n} \qquad (periodicity) \qquad (1.3)$$
+
 
 For explanation let's consider direct calculation of two samples of  $X[k]$ from Eq. (1.1) for $N=8$
 
 $$X[2]  =x[0] W_{8}^{0} + x[1] W_{8}^{2} + x[2] W_{8}^{4}+x[3] W_{8}^{6} + x[4] W_{8}^{8} + x[5] W_{8}^{10}+ x[6] W_{8}^{12} + x[7] W_{8}^{14} \qquad$$
+
 $$X[3]  =x[0] W_{8}^{0} + x[1] W_{8}^{3} + x[2] W_{8}^{6}+x[3] W_{8}^{9} + x[4] W_{8}^{12} + x[5] W_{8}^{15}+ x[6] W_{8}^{18} + x[7] W_{8}^{21} \qquad$$
 
 By using the periodicity property of   $W_{N}^{kn}$ and the fact that  $W_{N}^{N/2} =  e^{-j(2\pi/N)N/2}=-1$, we obtain
 
 $$X[2]  =x[0] W_{8}^{0} + x[1] W_{8}^{2} - x[2] W_{8}^{0}-x[3] W_{8}^{2} + x[4] W_{8}^{0} + x[5] W_{8}^{2}- x[6] W_{8}^{0} - x[7] W_{8}^{2} \qquad$$
+
 $$X[3]  =x[0] W_{8}^{0} + x[1] W_{8}^{3} - x[2] W_{8}^{2}+x[3] W_{8}^{1} - x[4] W_{8}^{0} - x[5] W_{8}^{3}+ x[6] W_{8}^{2} - x[7] W_{8}^{1} \qquad$$
 
 <p align="justify">
