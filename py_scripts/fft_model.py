@@ -1,4 +1,5 @@
 import numpy as np
+import os
 import matplotlib.pyplot as plt
 
 
@@ -92,20 +93,26 @@ def main():
     print('<< DFT / FFT math modelling')
     print('<< aleksei.rostov@protonmail.com')
     
-    hw      = np.loadtxt("../sim_files/cmpx_hls.txt", dtype=int)
+    curr_path = os.getcwd()
+    if (curr_path[-14:] != 'fft-hls-python'):
+        print("<< Error! Please change directory!")
+        exit()
+    
+    
+    hw      = np.loadtxt(os.getcwd() + "/sim_files/cmpx_hls.txt", dtype=int)
     hw_re   = hw[0::2]
     hw_im   = hw[1::2]
     hw_cmpx = hw_re + 1j*hw_im
-    
-    x_re    = np.loadtxt("../sim_files/scaled_re.txt", dtype=int)
-    x_im    = np.loadtxt("../sim_files/scaled_im.txt", dtype=int)
+        
+    x_re    = np.loadtxt(os.getcwd() + "/sim_files/scaled_re.txt", dtype=int)
+    x_im    = np.loadtxt(os.getcwd() + "/sim_files/scaled_im.txt", dtype=int)
     xcmpx   = x_re + 1j*x_im
     Np = np.size(xcmpx)
     Nstages = int(np.log2(Np))
     Nb      = Nstages
-    
-    u_re    = np.loadtxt("../sim_files/nonscaled_re.txt", dtype=float)
-    u_im    = np.loadtxt("../sim_files/nonscaled_im.txt", dtype=float)
+        
+    u_re    = np.loadtxt(os.getcwd() + "/sim_files/nonscaled_re.txt", dtype=float)
+    u_im    = np.loadtxt(os.getcwd() + "/sim_files/nonscaled_im.txt", dtype=float)
     u       = u_re + 1j*u_im
     
     print("<< Coefficients initialization")

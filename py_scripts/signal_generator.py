@@ -32,6 +32,14 @@ args = parser.parse_args()
 def main():
     print('<< Generating Input Data for FFT')
     print('<< aleksei.rostov@protonmail.com')
+    
+       
+    curr_path = os.getcwd()
+    if (curr_path[-14:] != 'fft-hls-python'):
+        print("<< Error! Please change directory!")
+        exit()
+   
+   
     if args.Npoints is None:
         Npoints = 32
     else:
@@ -56,21 +64,21 @@ def main():
     
     x       *= 10**(-SNR_q/20)
     # saving non-scaled input signal
-    np.savetxt('../sim_files/nonscaled_re.txt', np.real(x),fmt='%f')
-    np.savetxt('../sim_files/nonscaled_im.txt', np.imag(x),fmt='%f')
+    np.savetxt(curr_path + '/sim_files/nonscaled_re.txt', np.real(x),fmt='%f')
+    np.savetxt(curr_path + '/sim_files/nonscaled_im.txt', np.imag(x),fmt='%f')
     
     
     x_16     = np.round(Ampl*x)
     
-    np.savetxt('../sim_files/scaled_re.txt', np.real(x_16),fmt='%d')
-    np.savetxt('../sim_files/scaled_im.txt', np.imag(x_16),fmt='%d')
+    np.savetxt(curr_path + '/sim_files/scaled_re.txt', np.real(x_16),fmt='%d')
+    np.savetxt(curr_path + '/sim_files/scaled_im.txt', np.imag(x_16),fmt='%d')
     
     
     
     w_cmpx16 = coef_init(Npoints)
     
     
-    with open('../hls_src/coef_init.h', 'w') as fp:
+    with open(curr_path + '/hls_src/coef_init.h', 'w') as fp:
         fp.write("\n")
         fp.write("#define NPOINTS   ")
         fp.write(str(Npoints))

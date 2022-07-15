@@ -11,7 +11,7 @@ $(BUILD_FILE_NAME):
 	@echo "Copy files"
 	cp -f $(PWD)/tcl/run_hls.tcl $(PWD)/build
 	@echo "go to build dir"
-	cd $(PWD)/build	&&	vivado_hls -f run_hls.tcl	&&	vivado_hls -p $(BUILD_FILE_NAME)
+	cd $(PWD)/build	&&	vitis_hls -f run_hls.tcl	&&	vitis_hls -p $(BUILD_FILE_NAME)
 
 clean:
 	rm -rf build
