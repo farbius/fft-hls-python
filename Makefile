@@ -14,6 +14,6 @@ $(BUILD_FILE_NAME):
 	cd $(PWD)/build	&&	vitis_hls -f run_hls.tcl	&&	vitis_hls -p $(BUILD_FILE_NAME)
 
 clean:
-	rm -rf build
+	rm -rf build/ sim_files/
 
 .PHONY: all create_proj clean

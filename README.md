@@ -13,7 +13,7 @@ Folders and files of the repository
 ```
 +-- doc\   
 |   |
-|   +-- fft-hls-python.md       -- main documentation 
+|   +-- fft-hls-python.md   -- main documentation 
 |	+-- images\
 |
 +-- py_scripts\   
@@ -27,14 +27,11 @@ Folders and files of the repository
 |   +-- fft_accel.h
 |   +-- fft_accel_tb.cpp
 |   +-- testbenches.h
+|   +-- coef_init.h
 |
-+-- sim_files\              -- input / output files
++-- tcl\              		-- tcl script for compiling Vivado HLS
 |   |
-|   +-- cmpx_hls.txt
-|   +-- nonscaled_re.txt
-|   +-- nonscaled_im.txt
-|   +-- scaled_re.txt
-|   +-- scaled_im.txt
+|   +-- run_hls.tcl
 |
 +-- Makefile                -- Makefile for building Vivado HLS project
 |

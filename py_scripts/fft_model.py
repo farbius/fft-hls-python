@@ -70,21 +70,6 @@ def fft_dit(x, w):
             d = d + 1
             Y_int16[casc + 1, idx_1], Y_int16[casc + 1, idx_2] = butter_time_int16(Y_int16[casc, idx_1], Y_int16[casc, idx_2], w[idx_w])
    
-                
-    # print("Re  ")
-    # for k in range(Np):
-        # print("{:5.0f}".format(np.real(Y_int16[4, revBits(k, Ns)])), end = " ")
-    # print(" ")
-    # print("Im ")
-    # for k in range(Np):
-        # print("{:5.0f}".format(np.imag(Y_int16[4, revBits(k, Ns)])), end = " ")
-    
-    
-    # print("""
-    
-    
-    # """)
-    
     return np.round(Y_int16[Ns, :])
 
 
@@ -98,6 +83,9 @@ def main():
         print("<< Error! Please change directory!")
         exit()
     
+    if not (os.path.exists(curr_path + '/sim_files')):
+        print("<< Error! Please run signal_generator.py first!")
+        exit()
     
     hw      = np.loadtxt(os.getcwd() + "/sim_files/cmpx_hls.txt", dtype=int)
     hw_re   = hw[0::2]

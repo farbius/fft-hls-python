@@ -38,6 +38,9 @@ def main():
     if (curr_path[-14:] != 'fft-hls-python'):
         print("<< Error! Please change directory!")
         exit()
+        
+    if not (os.path.exists(curr_path + '/sim_files')):
+        os.makedirs(curr_path + '/sim_files')
    
    
     if args.Npoints is None:
