@@ -1,3 +1,3 @@
 .Xil/
 build/*
-sw_src/*
+sim_files/*
