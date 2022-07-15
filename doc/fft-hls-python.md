@@ -25,7 +25,7 @@ where $W_{N}^{kn} = e^{-j(2\pi kn/N)}$.
 <p align="justify">
 Direct computation of $X[k]$ requires a total of $N^2$ complex multiplications and $N(N-1)$ complex additions.
 Fast Fourier Transform (FFT)  is <i>exactly</i> the same DFT with optimization by reducing number of computations.
-All optimizations for improving the efficiency of the computation are based on the symmetry and periodicity ptoperties of   $W_{N}^{kn}$, specifically,
+All optimizations for improving the efficiency of the computation are based on the symmetry and periodicity properties of   $W_{N}^{kn}$ [1], specifically,
 
 $$W_{N}^{k[N - n]} =W_{N}^{-kn} = (W_{N}^{kn})^* \qquad (symmetry ) \qquad (1.2)$$
 
@@ -181,7 +181,7 @@ FFT itself without scaling, expands power spectrum range on value
 
 $$SNR_{FFT} = 10*\log_{10}(Npoints)  \  dB$$
 <p align="justify">
-Noise floor reduction in FFT is caused by narrow-bandness  of FFT itself [1]. For demonstration the noise floor reduction, let's consider two noise 1024-points  signals with amplitude 0 dB and -20 dB in the following Python script
+Noise floor reduction in FFT is caused by narrow-bandness  of FFT itself [2]. For demonstration the noise floor reduction, let's consider two noise 1024-points  signals with amplitude 0 dB and -20 dB in the following Python script
 
 ```sh
 import numpy as np
@@ -234,6 +234,6 @@ Second plot in Fig. (2.1) is a result of comparison Python FFT implementation an
 
 ## References
 
-1. [W. Kester, Understand SINAD, ENOB, SNR, THD, THD + N, and SFDR so You Don't Get Lost in the Noise Floor, Analog Devices, 2008](https://www.analog.com/media/en/training-seminars/tutorials/MT-003.pdf)
-2. source
+1. Alan V Oppenheim, Ronald W. Schafer, Discrete-Time Signal Processing, 3rd Edition, 2010
+2. [W. Kester, Understand SINAD, ENOB, SNR, THD, THD + N, and SFDR so You Don't Get Lost in the Noise Floor, Analog Devices, 2008](https://www.analog.com/media/en/training-seminars/tutorials/MT-003.pdf)
 3. source
