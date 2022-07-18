@@ -8,6 +8,8 @@
 #include "coef_init.h"
 /* ****************************** DEFINES ************************************** */
 
+#define E  5
+
 #define POW2(casc)      ((1) << casc)
 #define W_IDX(idx, casc)(((idx) % POW2(casc)) * (POW2(FFTRADIX - 1 - casc)))
 
@@ -222,6 +224,7 @@ void push_output(stream<stream_1ch> &out_stream,T y[NPTS])
 template <typename T, typename U, typename V>
 void n_stage(T x[NPOINTS], T y[NPOINTS], uint8_t casc)
 {
+#pragma HLS BIND_STORAGE variable=wcoe type=rom_np impl=lutram latency=1
 	T x0 = 0, y0 = 0;
 	T x1 = 0, y1 = 0;
 	nstage_L:for(uint16_t idx = 0; idx < NPOINTS / 2; idx ++)
@@ -251,10 +254,10 @@ void wrapped_fft_hw (stream<stream_1ch> &in_stream, stream<stream_1ch> &out_stre
 {
 #pragma HLS DATAFLOW
 	T     mem_bram[FFTRAD_1][NPOINTS];
-#pragma HLS ARRAY_PARTITION variable=mem_bram dim=1// type=block factor=6
-#pragma HLS BIND_STORAGE variable=mem_bram type=ram_t2p impl=uram
+#pragma HLS ARRAY_PARTITION variable=mem_bram dim=1 type=block factor=5
+#pragma HLS BIND_STORAGE variable=mem_bram type=ram_t2p impl=bram
 	T x[NPOINTS];
-#pragma HLS BIND_STORAGE variable=x type=ram_t2p impl=uram
+#pragma HLS BIND_STORAGE variable=x type=ram_t2p impl=bram
 
 
 	pop_input  <T, TU, TI, TD, NPOINTS>( in_stream, x);

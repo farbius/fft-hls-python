@@ -231,7 +231,17 @@ Second plot in Fig. (2.1) is a result of comparison Python FFT implementation an
 ## High Level Synthesis Implementation
 
 
+<p align="justify">
+FFT hardware design based on DSP and 2-ports BRAM blocks for High-Level Synthesis  is depicted on Fig. (3.1)
 
+<p align="center">
+  <img src="https://github.com/farbius/fft-hls-python/blob/main/doc/images/hw_design.svg" alt="butterfly"/>
+</p>
+
+<div align="center">
+<b>Figure 3.1 </b> FFT hardware design for HLS
+</div>
+<br/> 
 
 
 ## References
