@@ -3,28 +3,14 @@
 
 <svg
    width="210mm"
-   height="297mm"
-   viewBox="0 0 210 297"
+   height="60mm"
+   viewBox="0 0 210 60"
    version="1.1"
    id="svg5"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
   <defs
      id="defs2">
-    <linearGradient
-       id="linearGradient38752">
-      <stop
-         style="stop-color:#060606;stop-opacity:1;"
-         offset="0"
-         id="stop38750" />
-    </linearGradient>
-    <linearGradient
-       id="linearGradient9792">
-      <stop
-         style="stop-color:#535353;stop-opacity:1;"
-         offset="0"
-         id="stop9790" />
-    </linearGradient>
     <marker
        style="overflow:visible"
        id="TriangleStart"
@@ -41,13 +27,6 @@
          d="M 5.77,0 -2.88,5 V -5 Z"
          id="path135" />
     </marker>
-    <linearGradient
-       id="linearGradient2757">
-      <stop
-         style="stop-color:#f7e5e5;stop-opacity:1;"
-         offset="0"
-         id="stop2755" />
-    </linearGradient>
     <marker
        style="overflow:visible"
        id="TriangleStart-2"
@@ -338,7 +317,8 @@
     </marker>
   </defs>
   <g
-     id="layer1">
+     id="layer1"
+     transform="matrix(2.1682236,0,0,2.460337,-19.592896,-130.43337)">
     <rect
        style="fill:none;fill-opacity:0.336788;stroke:#000000;stroke-width:0.0674607;stroke-dasharray:0.539686, 0.0674607;stroke-dashoffset:0;stroke-opacity:1"
        id="rect9493-4"
@@ -347,7 +327,7 @@
        x="25.003719"
        y="58.129814" />
     <rect
-       style="fill:none;fill-opacity:0.33678761;stroke:#000000;stroke-width:0.1;stroke-dasharray:0.8, 0.1;stroke-opacity:1;stroke-dashoffset:0"
+       style="fill:none;fill-opacity:0.336788;stroke:#000000;stroke-width:0.1;stroke-dasharray:0.8, 0.1;stroke-dashoffset:0;stroke-opacity:1"
        id="rect9493"
        width="14.723805"
        height="15.928956"
@@ -448,7 +428,7 @@
        d="m 62.089595,68.776009 c 1.953957,0 1.953957,0 1.953957,0"
        id="path7638-5-2-3" />
     <path
-       style="fill:none;fill-opacity:0.336788;stroke:#000000;stroke-width:0.2;stroke-dasharray:0.2,0.60000001;stroke-opacity:1;stroke-dashoffset:0"
+       style="fill:none;fill-opacity:0.336788;stroke:#000000;stroke-width:0.2;stroke-dasharray:0.2, 0.6;stroke-dashoffset:0;stroke-opacity:1"
        d="m 59.816244,66.126128 c 1.953957,0 1.953957,0 1.953957,0"
        id="path7638-5-2-3-7" />
     <rect
