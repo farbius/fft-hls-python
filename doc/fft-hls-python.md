@@ -91,6 +91,7 @@ The batterfly requires only one complex multiplication $W_N^rX_{m-1}[q]$ and $N\
 Apart of butterfly calculation it is necessary to reoder input data for the first stage. 
 Reordering involves <i>bit-reversal</i> algorithm, when every bit of input data index binary form is reversed. For example, indexes for  $N = 8$ will be reorder like
 
+<p align="justify">
 | Normal Index| Binary form of normal index |Binary form of reserved index|Reserved index|
 | :-: | :-:| :-:| :-:|
 | 0 | 000 | 000 | 0 |

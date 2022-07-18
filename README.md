@@ -1,4 +1,4 @@
-# RTL (Verilog) fully piplined implementation of integer FFT decimation-in-time algorithm
+# High-Level Synthesis fully piplined implementation of integer FFT decimation-in-time algorithm
 Fully piplined and axi-stream compatible implementation of integer FFT decimation-in-time algorithms in Vivado HLS with detailed explanation and math modelling (Python).
 
 Explanation
