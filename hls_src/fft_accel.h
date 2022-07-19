@@ -263,10 +263,10 @@ template <typename T, typename U, typename V, int TU, int TI, int TD>
 void wrapped_fft_hw (stream<stream_1ch> &in_stream, stream<stream_1ch> &out_stream)
 {
 #pragma HLS DATAFLOW
-	T     mem_bram[FFTRAD_1][NPOINTS];
-#pragma HLS ARRAY_PARTITION variable=mem_bram dim=1 type=block factor=5
+	T	mem_bram[FFTRAD_1][NPOINTS];
+#pragma HLS ARRAY_PARTITION variable=mem_bram dim=1
 #pragma HLS BIND_STORAGE variable=mem_bram type=ram_t2p impl=bram
-	T x[NPOINTS];
+	T 	x[NPOINTS];
 #pragma HLS BIND_STORAGE variable=x type=ram_t2p impl=bram
 
 

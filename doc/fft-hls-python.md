@@ -315,7 +315,7 @@ void reverse_stage(T x[NPOINTS], T y[NPOINTS])
 </details>
 
 <p align="justify">
-Here the directive HLS INLINE for <i>T revBits(T Addr)</i> function was applied. The directive removes the function as separate entity 
+Here the directive <b>HLS INLINE for</b> <i>T revBits(T Addr)</i> function was applied. The directive removes the function as separate entity 
 in the HLS hierarchy - in other words, the directive built the function into the <i>void reverse_stage(T x[NPOINTS], T y[NPOINTS])</i> and represents 
 both functions as one entity. Two BRAM blocks are involved in the pre-processing stage as interfaces.
 
@@ -325,10 +325,10 @@ both functions as one entity. Two BRAM blocks are involved in the pre-processing
 <br/>
 
 <p align="justify">
-The Butterfly implements 2-points decimation-in-time DFT algorithm. The algoritm involves complex multiplier, addition and substraction arithmetic operation.
+The Butterfly implements 2-points decimation-in-time DFT algorithm. The algorithm involves complex multiplier, addition and substraction arithmetic operation.
 The algorithm's implementation is based on 3 DSP blocks, fully pipelined and has three clocks latency. In addition butterfly's output 
 is scaled in order to avoid overflowing.
-
+<br/>
 
 <details>
 
@@ -394,7 +394,128 @@ void butter_dit(T x0, T y0, T w0, T *x1, T *y1)
 </details>
 
 
+
+<br/>
+
+<i>n-stage implementation</i>
+<br/>
+
 <p align="justify">
+Every stage involves input and output 2-ports BRAM interfaces and one butterfly entity. Two complex points are passed to butterfly's input 
+with according coefficient and pushed out to the next BRAM.
+
+<br/>
+
+<details>
+
+<summary><b>View code</b></summary>
+
+```cpp
+/**
+ *
+ * FFT stage (reading array + butterfly processing)
+ *
+ * @param x[] 	input array
+ * @param w[] 	input coefficients
+ * @param casc 	stage number
+ *
+ * @return y[] 	output array
+ *
+ */
+
+template <typename T, typename U, typename V>
+void n_stage(T x[NPOINTS], T y[NPOINTS], uint8_t casc)
+{
+#pragma HLS BIND_STORAGE variable=wcoe type=rom_np impl=lutram latency=1
+	T x0 = 0, y0 = 0;
+	T x1 = 0, y1 = 0;
+	nstage_L:for(uint16_t idx = 0; idx < NPOINTS / 2; idx ++)
+	{
+#pragma HLS PIPELINE
+		uint16_t  d 	 = ((idx % POW2(casc)) == 0)  ? 2*idx : d + 1;
+		uint16_t _idx1   = d + 0;
+		uint16_t _idx2   = d + POW2(casc);
+		T w0 = wcoe[W_IDX(idx, casc)];
+
+		x0 		 = x[_idx1];
+		y0 		 = x[_idx2];
+		butter_dit<T, U, V, 15>(x0, y0, w0, &x1, &y1);
+		y[_idx1] = x1;
+		y[_idx2] = y1;
+	} // nstage_L
+} // n_stage
+```
+
+</details>
+<br/>
+
+<p align="justify">
+The implementation includes <b>HLS PIPELINE</b> directive, that provides ability to calculate 2-point DFT every clock. 
+All coefficients are precomputed and stored into ROM memory, that is implemented by using LUT resources. 
+This ROM implementation is required since fully pipelined FFT implementation (Several stages should work simultaneously). 
+The directive <b>HLS BIND_STORAGE</b> is applied to the global variable <i>wcoe</i>.
+<br/>
+
+<p align="justify">
+All stages are combined together in one common function
+
+<br/>
+
+<details>
+
+<summary><b>View code</b></summary>
+
+```cpp
+/**
+ *  FFT CORE
+ *
+ */
+template <typename T, typename U, typename V, int TU, int TI, int TD>
+void wrapped_fft_hw (stream<stream_1ch> &in_stream, stream<stream_1ch> &out_stream)
+{
+#pragma HLS DATAFLOW
+	T	mem_bram[FFTRAD_1][NPOINTS];
+#pragma HLS ARRAY_PARTITION variable=mem_bram dim=1
+#pragma HLS BIND_STORAGE variable=mem_bram type=ram_t2p impl=bram
+	T 	x[NPOINTS];
+#pragma HLS BIND_STORAGE variable=x type=ram_t2p impl=bram
+
+
+	pop_input  <T, TU, TI, TD, NPOINTS>( in_stream, x);
+	reverse_stage<T>(x, mem_bram[0]);
+	ffthw_L:for(uint8_t casc = 0; casc < FFTRADIX; casc ++)
+#pragma HLS UNROLL
+			n_stage    <T,U,V>(  mem_bram[casc], mem_bram[casc + 1], casc);
+
+	push_output<T, TU, TI, TD, NPOINTS>(out_stream, mem_bram[FFTRADIX]);
+} // wrapped_fft_hw
+```
+
+</details>
+
+<br/>
+
+<p align="justify">
+There are several important directives for improving throughtput and reserving certan resources. For example, <b>HLS ARRAY_PARTITION</b> allows 
+to divide 2 dimentional <i>mem_bram</i> array into several arrays or 2-ports BRAM blocks, <b>HLS UNROLL</b> is for unrolling <i>for</i> loop, 
+since every FFT stage can be computed only in sequence, that's why pipelining here is not allowed. 
+Directive <b>HLS DATAFLOW</b> plays significal role in order to provide pipelining on task-level and increasing the overall throughput (Fig. (3.2)). 
+In other words, the directive arranges all stages for providing computation as soon as possible. For example, every stage can accept new data 
+after the last two points were read out to butterfly.
+<br/>
+
+<p align="center">
+  <img src="https://github.com/farbius/fft-hls-python/blob/main/doc/images/dataflow.png" alt="butterfly"/>
+</p>
+
+<div align="center">
+<b>Figure 3.2 </b> Applying <b>HLS DATAFLOW</b> directive
+</div>
+<br/>
+
+<p align="justify">
+Task-level pipelining requires so-called <i>channels</i>, that could be implemented as Ping-Pong buffers or FIFO. It is additional memory resources.
+Channels allow to align and buffer data between tasks thereby providing high task-level performance or throughput.
 
 
 
