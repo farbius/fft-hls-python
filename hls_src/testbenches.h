@@ -3,7 +3,7 @@
 
 /* ****************************** DEFINES ************************************** */
 
-// #define CONSOLE // output to console (for few FFT points)
+// #define CONSOLE // output to console (print out to console for FFT points less or equal  16 )
 #define DIN_RE 	"..\\..\\..\\..\\..\\sim_files\\scaled_re.txt"
 #define DIN_IM 	"..\\..\\..\\..\\..\\sim_files\\scaled_im.txt"
 #define DOUT    "..\\..\\..\\..\\..\\sim_files\\cmpx_hls.txt"
@@ -11,24 +11,6 @@
 using namespace std;
 
 /* ****************************** C++ TEMPLATES ************************************** */
-
-template <typename T, typename U, uint8_t F>
-void but_dif_sw(cmpx_t<T> x_0, cmpx_t<T> y_0, cmpx_t<T> w_0, cmpx_t<T>* x_1, cmpx_t<T>* y_1)
-{
-	cmpx_t<U> cmpx_mlt = {0, 0};
-	cmpx_mlt.re_  = sum_pair<T, U>(y_0) * (U)w_0.re_ - sum_pair<T, U>(w_0) * (U)y_0.im_;
-	cmpx_mlt.im_  = sum_pair<T, U>(y_0) * (U)w_0.re_ + sub_pair<T, U>(w_0) * (U)y_0.re_;
-
-	cmpx_t<T> scaled_mlt = scl_pair<T, U, F>(cmpx_mlt);
-
-	cmpx_t<U> dout_0 = cnv_pair<U, T>(x_0) + cnv_pair<U, T>(scaled_mlt);
-	cmpx_t<U> dout_1 = cnv_pair<U, T>(x_0) - cnv_pair<U, T>(scaled_mlt);
-
-
-	*x_1 = scl_pair<T, U, 1>(dout_0);
-	*y_1 = scl_pair<T, U, 1>(dout_1);
-
-}
 
 void read_txt(uint32_t *dout)
 {
@@ -86,9 +68,96 @@ void read_txt(uint32_t *dout)
 }
 
 
-void test_top()
+
+/**
+ *
+ *  TOP BUTTERFLY TESTING
+ *
+ */
+
+void test_butterfly()
 {
-	cout  << endl << "START SIMULATION" << endl;
+	uint32_t x0 = 0x03458755;
+	uint32_t y0 = 0x0234F435;
+	uint32_t w0 = 0xF4359985;
+
+	uint32_t x1 = 0, y1 = 0;
+
+	cout  << endl << "START BUTTERFLY SIMULATION" << endl << endl;
+	BUTTERFLY_TOP(x0, y0, w0, &x1, &y1);
+
+	uint2cmpx.uint = x0;
+	cmpx_t<int16_t> x_0 = uint2cmpx.cmpx;
+
+	uint2cmpx.uint = y0;
+	cmpx_t<int16_t> y_0 = uint2cmpx.cmpx;
+
+	uint2cmpx.uint = w0;
+	cmpx_t<int16_t> w_0 = uint2cmpx.cmpx;
+
+	cout << setw(6) << "x0.re = " << x_0.re_ << "\t";
+	cout << setw(6) << "x0.im = " << x_0.im_ << "\n";
+	cout << setw(6) << "y0.re = " << y_0.re_ << "\t";
+	cout << setw(6) << "y0.im = " << y_0.im_ << "\n";
+	cout << setw(6) << "w0.re = " << w_0.re_ << "\t";
+	cout << setw(6) << "w0.im = " << w_0.im_ << "\n";
+
+	uint2cmpx.uint = x1;
+	cmpx_t<int16_t> x_1 = uint2cmpx.cmpx;
+
+	uint2cmpx.uint = y1;
+	cmpx_t<int16_t> y_1 = uint2cmpx.cmpx;
+
+	cout  << endl << "HARDWARE OUTPUT" << endl << endl;
+
+	cout << setw(6) << "x1.re = " << x_1.re_ << "\t";
+	cout << setw(6) << "x1.im = " << x_1.im_ << "\n";
+	cout << setw(6) << "y1.re = " << y_1.re_ << "\t";
+	cout << setw(6) << "y1.im = " << y_1.im_ << "\n";
+
+	/*
+	 *
+	 *   x_1 = x_0 + y_0 * w_0
+	 *   y_1 = x_0 - y_0 * w_0
+	 *
+	 */
+
+	x_1 = {0, 0};
+	y_1 = {0, 0};
+
+	cmpx_t<int32_t> yw = {0, 0};
+	yw.re_ = ((int32_t)(y_0.re_ * w_0.re_) - (int32_t)(y_0.im_ * w_0.im_)) >> 15;
+	yw.im_ = ((int32_t)(y_0.im_ * w_0.re_) + (int32_t)(y_0.re_ * w_0.im_)) >> 15;
+
+	x_1.re_ = (int16_t)(((int32_t)x_0.re_ + yw.re_) >> 1);
+	x_1.im_ = (int16_t)(((int32_t)x_0.im_ + yw.im_) >> 1);
+
+	y_1.re_ = (int16_t)(((int32_t)x_0.re_ - yw.re_) >> 1);
+	y_1.im_ = (int16_t)(((int32_t)x_0.im_ - yw.im_) >> 1);
+
+	cout  << endl << "GOLD OUTPUT" << endl << endl;
+
+	cout << setw(6) << "x1.re = " << x_1.re_ << "\t";
+	cout << setw(6) << "x1.im = " << x_1.im_ << "\n";
+	cout << setw(6) << "y1.re = " << y_1.re_ << "\t";
+	cout << setw(6) << "y1.im = " << y_1.im_ << "\n";
+
+
+	cout << endl << "END BUTTERFLY SIMULATION" << endl << endl;
+
+
+}
+
+
+/**
+ *
+ * 	TOP FFT testing
+ *
+ */
+
+void test_fft()
+{
+	cout  << endl << "START FFT SIMULATION" << endl;
 
 	uint32_t din_uint[NPOINTS];
 	stream<stream_1ch> 	src, dst;
@@ -165,5 +234,5 @@ void test_top()
 
 #endif
 
-	cout << endl << "END SIMULATION" << endl << endl;
+	cout << endl << "END FFT SIMULATION" << endl << endl;
 }

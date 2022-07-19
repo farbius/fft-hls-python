@@ -8,10 +8,8 @@
 #include "coef_init.h"
 /* ****************************** DEFINES ************************************** */
 
-#define E  5
-
-#define POW2(casc)      ((1) << casc)
-#define W_IDX(idx, casc)(((idx) % POW2(casc)) * (POW2(FFTRADIX - 1 - casc)))
+#define POW2(casc)      	((1) << casc)
+#define W_IDX(idx, casc)	(((idx) % POW2(casc)) * (POW2(FFTRADIX - 1 - casc)))
 
 typedef ap_axiu<32, 4, 1, 1> stream_1ch;
 
@@ -42,9 +40,10 @@ template <typename T>cmpx_t<T> operator-(const cmpx_t<T> & l,const cmpx_t<T> & r
 
 using namespace hls;
 
-/* ****************************** FUNCTIONS DECLARATION *************************** */
+/* ****************************** TOP FUNCTIONS DECLARATION *********************** */
 
-void FFT_TOP  	(stream<stream_1ch> &in_stream, stream<stream_1ch> &out_stream);
+void FFT_TOP  	  (stream<stream_1ch> &in_stream, stream<stream_1ch> &out_stream);
+void BUTTERFLY_TOP(uint32_t x0, uint32_t y0, uint32_t w0, uint32_t *x1, uint32_t *y1);
 
 /* ****************************** C++ TEMPLATES ************************************ */
 
@@ -118,24 +117,33 @@ T revBits(T Addr)
 	rb_L:for(uint8_t idx = 0; idx < FFTRADIX; idx ++)
 	{
 		revAddr <<= 1;
-		revAddr |= Addr & 1;
-		Addr >>= 1;
-	} // for
+		revAddr  |= Addr & 1;
+		Addr    >>= 1;
+	} // rb_L
 
 	return revAddr;
 } // revBits
 
+
+/**
+ * Pre-processing stage
+ *
+ * @param 	x 		input  data array
+ * @return 	y 		output data array with bit-revesed indexes
+ *
+ */
+
 template <typename T>
 void reverse_stage(T x[NPOINTS], T y[NPOINTS])
 {
-	T temp = 0;
-	uint16_t idx_r = 0;
+	T 			temp = 0;
+	uint16_t 	idx_r= 0;
 
-	revst_L:for(uint16_t idx_d = 0;  idx_d < NPOINTS; idx_d ++)
+	revst_L:for(uint16_t idx_d = 0; idx_d < NPOINTS; idx_d ++)
 	{
-		idx_r = revBits<uint16_t>(idx_d);
-		y[idx_r] = x[idx_d];
-	} // for
+		idx_r 	= revBits<uint16_t>(idx_d);
+		y[idx_r]= x[idx_d];
+	} // revst_L
 } // reverse_stage
 
 
@@ -208,6 +216,8 @@ void push_output(stream<stream_1ch> &out_stream,T y[NPTS])
 	pout_L:for(uint16_t idx = 0; idx <  NPTS; idx ++)
 		out_stream.write(write_stream<T, U, TI, TD>(y[idx], (idx == NPTS - 1)));
 } // push_output
+
+
 
 /**
  *

@@ -3,14 +3,56 @@
 
 <svg
    width="210mm"
-   height="60mm"
-   viewBox="0 0 210 60"
+   height="297mm"
+   viewBox="0 0 210 297"
    version="1.1"
    id="svg5"
+   sodipodi:docname="hw_design.svg"
+   inkscape:export-filename="hw_design.svg"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview121"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:lockguides="true"
+     inkscape:zoom="0.89263468"
+     inkscape:cx="298.55439"
+     inkscape:cy="561.25984"
+     inkscape:window-width="2560"
+     inkscape:window-height="1417"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg5" />
   <defs
      id="defs2">
+    <linearGradient
+       id="linearGradient38752">
+      <stop
+         style="stop-color:#060606;stop-opacity:1;"
+         offset="0"
+         id="stop38750" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient9792">
+      <stop
+         style="stop-color:#535353;stop-opacity:1;"
+         offset="0"
+         id="stop9790" />
+    </linearGradient>
     <marker
        style="overflow:visible"
        id="TriangleStart"
@@ -27,6 +69,13 @@
          d="M 5.77,0 -2.88,5 V -5 Z"
          id="path135" />
     </marker>
+    <linearGradient
+       id="linearGradient2757">
+      <stop
+         style="stop-color:#f7e5e5;stop-opacity:1;"
+         offset="0"
+         id="stop2755" />
+    </linearGradient>
     <marker
        style="overflow:visible"
        id="TriangleStart-2"

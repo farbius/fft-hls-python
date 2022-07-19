@@ -134,6 +134,7 @@ parser.add_argument('Npoints' ,default=None, type=int)
 parser.add_argument('Nsignals',default=None, type=int)
 parser.add_argument('SNR_dB'  ,default=None, type=int)
 ```
+
 <p align="justify">
 where <i>Npoints</i>  is a number of FFT points, 
 <i>Nsignals</i> - is an amount of harmonics with random frequencies in the synthetic signal and <i>SNR_dB</i> - is a max value of Signal-To-Noise ratio of the first harmonic in the synthetic signal, SNR of other harmonics will be decreased on 2 dB for every one.
@@ -155,6 +156,7 @@ scaled_re.txt
 scaled_im.txt
 coef_init.h
 ```
+
 <p align="justify">
 Header <i>coef_init.h</i> consist of FFT parameters and scaled to  <i>-32768 ... +32768</i> coefficients. The header file is used by HLS FFT implementation. 
 Files <i>nonscaled_.txt</i> are complex float point input for Numpy FFT implementation, that will be used for comparison with HLS FFT implementation. 
@@ -232,7 +234,10 @@ Second plot in Fig. (2.1) is a result of comparison Python FFT implementation an
 
 
 <p align="justify">
-FFT hardware design based on DSP and 2-ports BRAM blocks for High-Level Synthesis  is depicted on Fig. (3.1)
+Hardware Design is a key point before implementation.
+Hardware design allows to figure out what kind of resourses (BRAM, DSP, LUTs)
+and how many are required for an algorithm implementation, what optimization (area, latency, throughput) can be applied.
+For example, FFT Hardware Design for $log_2N$ stages and <i>N</i> points is depicted on Fig. (3.1)
 
 <p align="center">
   <img src="https://github.com/farbius/fft-hls-python/blob/main/doc/images/hw_design.svg" alt="butterfly"/>
@@ -241,11 +246,160 @@ FFT hardware design based on DSP and 2-ports BRAM blocks for High-Level Synthesi
 <div align="center">
 <b>Figure 3.1 </b> FFT hardware design for HLS
 </div>
-<br/> 
+<br/>
+
+<p align="justify">
+The Hardware Design includes pre-processing stage for bit-reversing and further stages for computation (<i>n_stage</i>). External interface is fully pipelined AXI STREAM. 
+During pre-processing stage input data is stored according bit-reversed indexes into BRAM memory. 
+Every stage for computation takes pair of data from 2-ports BRAM and does calculation. Final stage pushes data into AXI STREAM interface.
+Throughput, area, latency of the Hardware Design (pipelining) is provided by applying some optimization HLS techniques (directives) [3].
+<br/>
+
+<i>Bit-reversing or pre-processing</i>
+<br/>
+
+<p align="justify">
+Bit-reversing algorithm is implemented in pre-processing stage and does data reading from one memory and storing to another.
+
+<details>
+
+<summary><b>View code</b></summary>
+
+```sh
+/**
+ * Bit reversal operation
+ *
+ * @param 	Addr 		U-bits address for reversal
+ * @return 	reversal 	address
+ *
+ */
+template <typename T>
+T revBits(T Addr)
+{
+#pragma HLS INLINE
+	T revAddr = 0;
+	rb_L:for(uint8_t idx = 0; idx < FFTRADIX; idx ++)
+	{
+		revAddr <<= 1;
+		revAddr  |= Addr & 1;
+		Addr    >>= 1;
+	} // rb_L
+
+	return revAddr;
+} // revBits
+
+
+/**
+ * Pre-processing stage
+ *
+ * @param 	x 		input  data array
+ * @return 	y 		output data array with bit-revesed indexes
+ *
+ */
+
+template <typename T>
+void reverse_stage(T x[NPOINTS], T y[NPOINTS])
+{
+	T 			temp = 0;
+	uint16_t 	idx_r= 0;
+
+	revst_L:for(uint16_t idx_d = 0; idx_d < NPOINTS; idx_d ++)
+	{
+		idx_r 	= revBits<uint16_t>(idx_d);
+		y[idx_r]= x[idx_d];
+	} // revst_L
+} // reverse_stage
+
+```
+
+</details>
+
+<p align="justify">
+Here the directive HLS INLINE for <i>T revBits(T Addr)</i> function was applied. The directive removes the function as separate entity 
+in the HLS hierarchy - in other words, the directive built the function into the <i>void reverse_stage(T x[NPOINTS], T y[NPOINTS])</i> and represents 
+both functions as one entity. Two BRAM blocks are involved in the pre-processing stage as interfaces.
+
+<br/>
+
+<i>n-stage, butterfly implementation</i>
+<br/>
+
+<p align="justify">
+The Butterfly implements 2-points decimation-in-time DFT algorithm. The algoritm involves complex multiplier, addition and substraction arithmetic operation.
+The algorithm's implementation is based on 3 DSP blocks, fully pipelined and has three clocks latency. In addition butterfly's output 
+is scaled in order to avoid overflowing.
+
+
+<details>
+
+<summary><b>View code</b></summary>
+
+```sh
+/**
+ *  butterfly dit (decimation-in-time) implementation
+ *
+ *  @param x_0 point in complex value converted in word cmpx_t<int16_t> -> uint32_t
+ *  @param y_0 point in complex value converted in word cmpx_t<int16_t> -> uint32_t
+ *  @param w_0 coeff in complex value converted in word cmpx_t<int16_t> -> uint32_t
+ *  @return x_1, y_1 points in complex value converted in word cmpx_t<int16_t> -> uint32_t
+ *           ------             -----
+ *  x_0---->| z^-2 |--+-----+->|  +  |------> x_1
+ *           ------    \   /    -----
+ *                      \ /
+ *                       X
+ *           ------    /  \     -----
+ *  y_0---->| cmpx |--+----+-->|  -  |------> y_1
+ *           -+----             -----
+ *           /
+ *  w_0---->
+ *
+ *   x_1 = x_0 - y_0 * w_0
+ *   y_1 = x_0 + y_0 * w_0
+ */
+template <typename T, typename U, typename V, uint8_t F>
+void butter_dit(T x0, T y0, T w0, T *x1, T *y1)
+{
+#pragma HLS INLINE
+	cmpx_t<V>   x_0 = {0, 0}, y_0 = {0, 0}, w_0 = {0, 0};
+
+	uint2cmpx.uint = x0;
+	x_0 = uint2cmpx.cmpx;
+
+	uint2cmpx.uint = y0;
+	y_0 = uint2cmpx.cmpx;
+
+	uint2cmpx.uint = w0;
+	w_0 = uint2cmpx.cmpx;
+
+	cmpx_t<V>  x_1 = {0, 0};
+	cmpx_t<V>  y_1 = {0, 0};
+
+	cmpx_t<U> cmpx_mlt = {0, 0};
+	cmpx_mlt.re_  = sum_pair<V, U>(y_0) * (U)w_0.re_ - sum_pair<V, U>(w_0) * (U)y_0.im_;
+	cmpx_mlt.im_  = sum_pair<V, U>(y_0) * (U)w_0.re_ + sub_pair<V, U>(w_0) * (U)y_0.re_;
+
+	cmpx_t<V> scaled_mlt = scl_pair<V, U, F>(cmpx_mlt);
+
+	cmpx_t<U> dout_0 = cnv_pair<U, V>(x_0) + cnv_pair<U, V>(scaled_mlt);
+	cmpx_t<U> dout_1 = cnv_pair<U, V>(x_0) - cnv_pair<U, V>(scaled_mlt);
+
+	x_1 = scl_pair<V, U, 1>(dout_0);
+	y_1 = scl_pair<V, U, 1>(dout_1);
+
+	*x1 = (T &) x_1;
+	*y1 = (T &) y_1;
+} // butter_dit
+```
+
+</details>
+
+
+<p align="justify">
+
 
 
 ## References
 
 1. Alan V Oppenheim, Ronald W. Schafer, Discrete-Time Signal Processing, 3rd Edition, 2010
 2. [W. Kester, Understand SINAD, ENOB, SNR, THD, THD + N, and SFDR so You Don't Get Lost in the Noise Floor, Analog Devices, 2008](https://www.analog.com/media/en/training-seminars/tutorials/MT-003.pdf)
-3. source
+3. [Vitis High-Level Synthesis User Guide UG1399](https://docs.xilinx.com/r/en-US/ug1399-vitis-hls/pragma-HLS-interface)
