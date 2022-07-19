@@ -187,7 +187,7 @@ $$SNR_{FFT} = 10*\log_{10}(Npoints)  \  dB$$
 <p align="justify">
 Noise floor reduction in FFT is caused by narrow-bandness  of FFT itself [2]. For demonstration the noise floor reduction, let's consider two noise 1024-points  signals with amplitude 0 dB and -20 dB in the following Python script
 
-```sh
+```python
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -240,7 +240,7 @@ and how many are required for an algorithm implementation, what optimization (ar
 For example, FFT Hardware Design for $log_2N$ stages and <i>N</i> points is depicted on Fig. (3.1)
 
 <p align="center">
-  <img src="https://github.com/farbius/fft-hls-python/blob/main/doc/images/hw_design.svg" alt="butterfly"/>
+  <img src="https://github.com/farbius/fft-hls-python/blob/main/doc/images/hw_design.png" alt="butterfly"/>
 </p>
 
 <div align="center">
@@ -265,7 +265,7 @@ Bit-reversing algorithm is implemented in pre-processing stage and does data rea
 
 <summary><b>View code</b></summary>
 
-```sh
+```cpp
 /**
  * Bit reversal operation
  *
@@ -334,7 +334,7 @@ is scaled in order to avoid overflowing.
 
 <summary><b>View code</b></summary>
 
-```sh
+```cpp
 /**
  *  butterfly dit (decimation-in-time) implementation
  *
