@@ -162,6 +162,13 @@ Header <i>coef_init.h</i> consist of FFT parameters and scaled to  <i>-32768 ...
 Files <i>nonscaled_.txt</i> are complex float point input for Numpy FFT implementation, that will be used for comparison with HLS FFT implementation. 
 Files <i>scaled_.txt</i> are scaled to 16-bit signed register complex input for HLS FFT.
 <br>
+
+
+```sh
+TODO: math modell explanation
+```
+
+<p align="justify">
 The <i>fft_model.py</i> python script consists of scaled to 16-bits signed register implementation of FFT and FFT from Numpy package. The script reads out <i>scaled_.txt</i> and <i>nonscaled_.txt</i> data, output <i>cmpx_hls.txt</i> from HLS Co-simulation and plots results of three FFT. 
 <br>
 Result for <i>python3 signal_generator.py 1024 3 40</i> is depicted on Fig. (2.1)
