@@ -57,7 +57,10 @@ By reducing number of $W_{N}^{kn}$ we may group corresponding pairs of $x[n]$  s
 </div>
 <br/>
 
-As seen from Fig. (1.1) , it is enough to compute and store only $N/2$ of coefficients. This is the main advantage of periodocity property of $W_{N}^{kn}$. By applying both the symmetry and periodicity property  for coefficients and grouping input data the following dataflow for 8-point DFT computation can be implemented
+<p align="justify">
+As seen from Fig. (1.1) , it is enough to compute and store only $N/2$ of coefficients. 
+This is the main advantage of periodocity property of $W_{N}^{kn}$. 
+By applying both the symmetry and periodicity property  for coefficients and grouping input data the following dataflow for 8-point DFT computation can be implemented
 
 <p align="center">
   <img src="https://github.com/farbius/fft-hls-python/blob/main/doc/images/data_flow.png" alt="data_flow"/>
@@ -162,15 +165,70 @@ Header <i>coef_init.h</i> consist of FFT parameters and scaled to  <i>-32768 ...
 Files <i>nonscaled_.txt</i> are complex float point input for Numpy FFT implementation, that will be used for comparison with HLS FFT implementation. 
 Files <i>scaled_.txt</i> are scaled to 16-bit signed register complex input for HLS FFT.
 <br>
+<p align="justify">
+The <i>fft_model.py</i> python script consists of scaled to 16-bits signed register implementation of FFT and FFT from Numpy package. 
+The script reads out <i>scaled_.txt</i> and <i>nonscaled_.txt</i> data, output <i>cmpx_hls.txt</i> from HLS Co-simulation and plots results of three FFT. 
+The mathematical model of FFT is based on decomposition DFT during computation (Fig. 1.1) and is implemented stage-by-stage with pre-computed coefficients.
+<br>
 
 
-```sh
-TODO: math modell explanation
+<details>
+
+<summary><b>View code</b></summary>
+
+```python
+def fft_dit(x, w):
+    """
+    FFT decimation-in-time implementation 
+    @param  complex int16 x: input data
+    @param  complex int16 w: twiddling coefficients
+    @return complex int16 y: output data
+    """
+    Np = np.size(x)
+    Ns = int(np.log2(Np))
+    Y_int16 = np.zeros((Ns + 1, Np), dtype=complex)
+    
+    # reverse input
+    for k in range(Np):
+        Y_int16[0, k] = x[revBits(k, Ns)]
+        
+        
+    for casc in range(Ns):
+        d = 0
+        for k in range(Np // 2):
+            idx_w = int(np.mod(k, 2**casc))*2**(Ns - 1 - casc)
+            if np.mod(k, 2**casc) == 0:
+                d = 2*k
+            idx_1 = d 
+            idx_2 = d + 2**casc
+            d = d + 1
+            Y_int16[casc + 1, idx_1], Y_int16[casc + 1, idx_2] = butter_time_int16(Y_int16[casc, idx_1], Y_int16[casc, idx_2], w[idx_w])
+   
+    return np.round(Y_int16[Ns, :])
+
+
+def butter_time_int16(x, y, w):
+    """
+    Radix 2 butterfly implementation (decimation-in-time) with rounding to int16 and scaling factor for output
+    @param complex int16 x:  FFT complex point (sample)
+    @param complex int16 y:  FFT complex point (sample)
+    @param complex int16 w:  Complex coefficient
+    @return x_t, y_t complex  int16 samples
+    """
+    y_w = np.round((y * w)/Ampl) # rounding back to 16 bits after multiplication
+    y_t = x - y_w
+    x_t = x + y_w
+    return x_t/2, y_t/2	
+
 ```
 
-<p align="justify">
-The <i>fft_model.py</i> python script consists of scaled to 16-bits signed register implementation of FFT and FFT from Numpy package. The script reads out <i>scaled_.txt</i> and <i>nonscaled_.txt</i> data, output <i>cmpx_hls.txt</i> from HLS Co-simulation and plots results of three FFT. 
+</details>
+
+
 <br>
+
+<p align="center">
+Scalling and rounding are implemented in order to fit to 16-bit signed register during computation.
 Result for <i>python3 signal_generator.py 1024 3 40</i> is depicted on Fig. (2.1)
 
 
@@ -188,7 +246,7 @@ First plot is a power of FFT output implemented in Numpy (green), Python (red) a
 $$SNR_{RMS} = 6.02 * 15 + 1.76 = 92.06 \  dB$$
 
 <p align="justify">
-FFT itself without scaling, expands power spectrum range on value 
+FFT itself without scaling, expands power spectrum range 
 
 $$SNR_{FFT} = 10*\log_{10}(Npoints)  \  dB$$
 <p align="justify">
@@ -229,7 +287,7 @@ plt.show()
 </div>
 <br/> 
 <p align="justify">
-As can be seen from Fig. (2.2)  noise floor was moved on 30 dB since 1024-point FFT was applied (30 dB).
+As can be seen from Fig. (2.2)  noise floor was moved on 30 dB since 1024-point FFT was applied (FFT noise floor is 30 dB).
 <br>
 <p align="justify">
 Second plot in Fig. (2.1) is a result of comparison Python FFT implementation and HLS Co-simulation output. The small error is caused by rounding operation during FFT computation. 
