@@ -42,8 +42,9 @@ using namespace hls;
 
 /* ****************************** TOP FUNCTIONS DECLARATION *********************** */
 
-void FFT_TOP  	  (stream<stream_1ch> &in_stream, stream<stream_1ch> &out_stream);
-void BUTTERFLY_TOP(uint32_t x0, uint32_t y0, uint32_t w0, uint32_t *x1, uint32_t *y1);
+void FFT_TOP  	  	(stream<stream_1ch> &in_stream, stream<stream_1ch> &out_stream);
+void BUTTERFLY_TOP	(uint32_t x0, uint32_t y0, uint32_t w0, uint32_t *x1, uint32_t *y1);
+void N_STAGE_TOP	(uint32_t x[NPOINTS], uint32_t y[NPOINTS], uint8_t casc);
 
 /* ****************************** C++ TEMPLATES ************************************ */
 
@@ -72,6 +73,7 @@ template <typename T, typename U, typename V, uint8_t F>
 void butter_dit(T x0, T y0, T w0, T *x1, T *y1)
 {
 #pragma HLS INLINE
+// #pragma HLS PIPELINE // check overall
 	cmpx_t<V>   x_0 = {0, 0}, y_0 = {0, 0}, w_0 = {0, 0};
 
 	uint2cmpx.uint = x0;

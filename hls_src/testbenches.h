@@ -71,6 +71,48 @@ void read_txt(uint32_t *dout)
 
 /**
  *
+ *  TOP N_STAGE TESTING
+ *
+ */
+void test_n_stage()
+{
+
+	cout  << endl << "START N STAGE SIMULATION" << endl << endl;
+	/* TODO :    Add golden output computation */
+	uint32_t x[NPOINTS];
+	uint32_t y[NPOINTS];
+
+	// initialization of arrays
+	for(unsigned int k = 0; k < NPOINTS; k ++)
+	{
+		y[k] = 0x00000000;
+		uint2cmpx.cmpx = {(int16_t)(128*k), (int16_t)(64*(k + 2))};
+		x[k] = uint2cmpx.uint;
+
+#ifdef CONSOLE
+		cout << "x[" << k << "] = " << x[k] << endl;
+		cout << "y[" << k << "] = " << y[k] << endl;
+#endif
+
+	}
+
+	N_STAGE_TOP	(x, y, 1);
+
+	for(unsigned int k = 0; k < NPOINTS; k ++)
+		{
+	#ifdef CONSOLE
+			cout << "y[" << k << "] = " << y[k] << endl;
+	#endif
+
+		}
+
+
+	cout << endl << "END N STAGE SIMULATION" << endl << endl;
+}
+
+
+/**
+ *
  *  TOP BUTTERFLY TESTING
  *
  */
