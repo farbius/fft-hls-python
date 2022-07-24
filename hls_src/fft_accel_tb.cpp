@@ -16,8 +16,6 @@ int main()
 	test_butterfly();
 #endif
 
-	test_n_stage();
-
 #ifdef TEST_TOP
 	test_fft();
 #endif

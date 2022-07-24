@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 Ampl    = 2**15
 Nq      = 15
 # RMS quantization level
-SNR_q   = 6.02*Nq + 1.76
+SNR_q   = 6.02*Nq - 1.76
 
 
 def revBits(n, no_of_bits):

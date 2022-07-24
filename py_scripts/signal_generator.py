@@ -93,7 +93,7 @@ def main():
         fp.write("\n")
         fp.write("\n")
         fp.write('static uint32_t wcoe[] = {')
-        for idx in range(Npoints):
+        for idx in range(Npoints // 2):
             w_re = int(np.real(w_cmpx16[idx]))
             w_im = int(np.imag(w_cmpx16[idx]))
             fp.write("0x")

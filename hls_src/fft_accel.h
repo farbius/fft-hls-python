@@ -8,10 +8,10 @@
 #include "coef_init.h"
 /* ****************************** DEFINES ************************************** */
 
-#define POW2(casc)      	((1) << casc)
-#define W_IDX(idx, casc)	(((idx) % POW2(casc)) * (POW2(FFTRADIX - 1 - casc)))
+#define POW2(casc)      	(1 << casc)
+#define W_IDX(idx, casc)	((idx % POW2(casc)) * POW2(FFTRADIX - 1 - casc))
 
-typedef ap_axiu<32, 4, 1, 1> stream_1ch;
+typedef ap_axiu<32, 0, 0, 0> stream_1ch;
 
 /* ****************************** STRUCTURES ************************************ */
 template <typename T>
@@ -44,7 +44,6 @@ using namespace hls;
 
 void FFT_TOP  	  	(stream<stream_1ch> &in_stream, stream<stream_1ch> &out_stream);
 void BUTTERFLY_TOP	(uint32_t x0, uint32_t y0, uint32_t w0, uint32_t *x1, uint32_t *y1);
-void N_STAGE_TOP	(uint32_t x[NPOINTS], uint32_t y[NPOINTS], uint8_t casc);
 
 /* ****************************** C++ TEMPLATES ************************************ */
 
@@ -153,8 +152,8 @@ void reverse_stage(T x[NPOINTS], T y[NPOINTS])
 /*
  * 	reading a sample from axis interface
  */
-template <typename T, int U, int TI, int TD>
-T read_stream(ap_axiu <sizeof(T)*8,U,TI,TD> const &e)
+template <typename T>
+T read_stream(stream_1ch const &e)
 {
 #pragma HLS INLINE
 	union
@@ -165,33 +164,26 @@ T read_stream(ap_axiu <sizeof(T)*8,U,TI,TD> const &e)
 	converter.ival = e.data;
 	T ret = converter.oval;
 
-	volatile ap_uint<sizeof(T)> strb = e.strb;
-	volatile ap_uint<sizeof(T)> keep = e.keep;
-	volatile ap_uint<U> user = e.user;
-	volatile ap_uint<1> last = e.last;
-	volatile ap_uint<TI> id = e.id;
-	volatile ap_uint<TD> dest = e.dest;
-
 	return ret;
 } // read_stream
 
-template <typename T, int U, int TI, int TD, int NPTS>
-void pop_input(stream<stream_1ch> &in_stream,T y[NPTS])
+template <typename T>
+void pop_input(stream<stream_1ch> &in_stream,T y[NPOINTS])
 {
 #pragma HLS INLINE
-	pin_L:for(uint16_t idx = 0; idx <  NPTS; idx ++)
-		y[idx] = read_stream<T, U, TI, TD>(in_stream.read());
+	pin_L:for(uint16_t idx = 0; idx <  NPOINTS; idx ++)
+		y[idx] = read_stream<T>(in_stream.read());
 } // pop_input
 
 
 /*
  * 	writing a sample to axis interface
  */
-template <typename T, int U, int TI, int TD>
-ap_axiu <sizeof(T)*8,U,TI,TD> write_stream(T const &v, bool last = false)
+template <typename T>
+stream_1ch write_stream(T const &v, bool last = false)
 {
 #pragma HLS INLINE
-	ap_axiu<sizeof(T)*8,U,TI,TD> e;
+	stream_1ch e;
 
 	union
 	{
@@ -200,23 +192,17 @@ ap_axiu <sizeof(T)*8,U,TI,TD> write_stream(T const &v, bool last = false)
 	} converter;
 	converter.ival = v;
 	e.data = converter.oval;
-
-	// set it to sizeof(T) ones
-	e.strb = -1;
-	e.keep = 15; //e.strb;
-	e.user = 0;
 	e.last = last ? 1 : 0;
-	e.id = 0;
-	e.dest = 0;
+
 	return e;
 }
 
-template <typename T, int U, int TI, int TD, int NPTS>
-void push_output(stream<stream_1ch> &out_stream,T y[NPTS])
+template <typename T>
+void push_output(stream<stream_1ch> &out_stream,T y[NPOINTS])
 {
 #pragma HLS INLINE
-	pout_L:for(uint16_t idx = 0; idx <  NPTS; idx ++)
-		out_stream.write(write_stream<T, U, TI, TD>(y[idx], (idx == NPTS - 1)));
+	pout_L:for(uint16_t idx = 0; idx <  NPOINTS; idx ++)
+		out_stream.write(write_stream<T>(y[idx], (idx == NPOINTS - 1)));
 } // push_output
 
 
@@ -237,21 +223,16 @@ template <typename T, typename U, typename V>
 void n_stage(T x[NPOINTS], T y[NPOINTS], uint8_t casc)
 {
 #pragma HLS BIND_STORAGE variable=wcoe type=rom_np impl=lutram latency=1
-	T x0 = 0, y0 = 0;
-	T x1 = 0, y1 = 0;
-	nstage_L:for(uint16_t idx = 0; idx < NPOINTS / 2; idx ++)
+	uint16_t  d = 0;
+	nstage_L:for(uint16_t idx = 0; idx < NPOINTS/2; idx ++)
 	{
 #pragma HLS PIPELINE
-		uint16_t  d 	 = ((idx % POW2(casc)) == 0)  ? 2*idx : d + 1;
+		          d 	 = ((idx % (uint16_t)(POW2(casc))) == 0)  ? 2*idx : d + 1;
 		uint16_t _idx1   = d + 0;
 		uint16_t _idx2   = d + POW2(casc);
-		T w0 = wcoe[W_IDX(idx, casc)];
+		uint16_t _widx   = ((idx % POW2(casc)) * POW2(FFTRADIX - 1 - casc));
 
-		x0 		 = x[_idx1];
-		y0 		 = x[_idx2];
-		butter_dit<T, U, V, 15>(x0, y0, w0, &x1, &y1);
-		y[_idx1] = x1;
-		y[_idx2] = y1;
+		butter_dit<T, U, V, 15>(x[_idx1], x[_idx2],  wcoe[W_IDX(idx, casc)], &y[_idx1], &y[_idx2]);
 	} // nstage_L
 } // n_stage
 
@@ -261,7 +242,7 @@ void n_stage(T x[NPOINTS], T y[NPOINTS], uint8_t casc)
  *  FFT CORE
  *
  */
-template <typename T, typename U, typename V, int TU, int TI, int TD>
+template <typename T, typename U, typename V>
 void wrapped_fft_hw (stream<stream_1ch> &in_stream, stream<stream_1ch> &out_stream)
 {
 #pragma HLS DATAFLOW
@@ -272,11 +253,12 @@ void wrapped_fft_hw (stream<stream_1ch> &in_stream, stream<stream_1ch> &out_stre
 #pragma HLS BIND_STORAGE variable=x type=ram_t2p impl=bram
 
 
-	pop_input  <T, TU, TI, TD, NPOINTS>( in_stream, x);
+
+	pop_input  <T>( in_stream, x);
 	reverse_stage<T>(x, mem_bram[0]);
 	ffthw_L:for(uint8_t casc = 0; casc < FFTRADIX; casc ++)
 #pragma HLS UNROLL
 			n_stage    <T,U,V>(  mem_bram[casc], mem_bram[casc + 1], casc);
 
-	push_output<T, TU, TI, TD, NPOINTS>(out_stream, mem_bram[FFTRADIX]);
+	push_output<T>(out_stream, mem_bram[FFTRADIX]);
 } // wrapped_fft_hw
