@@ -9,7 +9,7 @@
 /* ****************************** DEFINES ************************************** */
 
 #define POW2(casc)      	(1 << casc)
-#define W_IDX(idx, casc)	((idx % POW2(casc)) * POW2(FFTRADIX - 1 - casc))
+#define W_IDX(idx, casc)	((idx % POW2(casc)) * POW2((FFTRADIX - 1) - casc))
 
 typedef ap_axiu<32, 0, 0, 0> stream_1ch;
 
@@ -170,7 +170,7 @@ T read_stream(stream_1ch const &e)
 template <typename T>
 void pop_input(stream<stream_1ch> &in_stream,T y[NPOINTS])
 {
-#pragma HLS INLINE
+// #pragma HLS INLINE
 	pin_L:for(uint16_t idx = 0; idx <  NPOINTS; idx ++)
 		y[idx] = read_stream<T>(in_stream.read());
 } // pop_input
@@ -200,7 +200,7 @@ stream_1ch write_stream(T const &v, bool last = false)
 template <typename T>
 void push_output(stream<stream_1ch> &out_stream,T y[NPOINTS])
 {
-#pragma HLS INLINE
+// #pragma HLS INLINE
 	pout_L:for(uint16_t idx = 0; idx <  NPOINTS; idx ++)
 		out_stream.write(write_stream<T>(y[idx], (idx == NPOINTS - 1)));
 } // push_output
@@ -222,7 +222,7 @@ void push_output(stream<stream_1ch> &out_stream,T y[NPOINTS])
 template <typename T, typename U, typename V>
 void n_stage(T x[NPOINTS], T y[NPOINTS], uint8_t casc)
 {
-#pragma HLS BIND_STORAGE variable=wcoe type=rom_np impl=lutram latency=1
+// #pragma HLS BIND_STORAGE variable=wcoe type=rom_np impl=lutram latency=1
 	uint16_t  d = 0;
 	nstage_L:for(uint16_t idx = 0; idx < NPOINTS/2; idx ++)
 	{
@@ -230,7 +230,7 @@ void n_stage(T x[NPOINTS], T y[NPOINTS], uint8_t casc)
 		          d 	 = ((idx % (uint16_t)(POW2(casc))) == 0)  ? 2*idx : d + 1;
 		uint16_t _idx1   = d + 0;
 		uint16_t _idx2   = d + POW2(casc);
-		uint16_t _widx   = ((idx % POW2(casc)) * POW2(FFTRADIX - 1 - casc));
+		// uint16_t _widx   = ((idx % POW2(casc)) * POW2((FFTRADIX - 1) - casc));
 
 		butter_dit<T, U, V, 15>(x[_idx1], x[_idx2],  wcoe[W_IDX(idx, casc)], &y[_idx1], &y[_idx2]);
 	} // nstage_L
