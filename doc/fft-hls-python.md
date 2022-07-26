@@ -227,7 +227,7 @@ def butter_time_int16(x, y, w):
 
 <br>
 
-<p align="center">
+<p align="justify">
 Scalling and rounding are implemented in order to fit to 16-bit signed register during computation.
 Result for <i>python3 signal_generator.py 1024 3 40</i> is depicted on Fig. (2.1)
 
@@ -251,6 +251,11 @@ FFT itself without scaling, expands power spectrum range
 $$SNR_{FFT} = 10*\log_{10}(Npoints)  \  dB$$
 <p align="justify">
 Noise floor reduction in FFT is caused by narrow-bandness  of FFT itself [2]. For demonstration the noise floor reduction, let's consider two noise 1024-points  signals with amplitude 0 dB and -20 dB in the following Python script
+
+
+<details>
+
+<summary><b>View code</b></summary>
 
 ```python
 import numpy as np
@@ -277,6 +282,8 @@ plt.xlabel('bin')
 plt.ylabel('power, dB')
 plt.show()
 ```
+
+</details>
 
 <p align="center">
   <img src="https://github.com/farbius/fft-hls-python/blob/main/doc/images/fft_floor_snr.png" alt="butterfly"/>
@@ -390,9 +397,8 @@ both functions as one entity. Two BRAM blocks are involved in the pre-processing
 <br/>
 
 <p align="justify">
-The Butterfly implements 2-points decimation-in-time DFT algorithm. The algorithm involves complex multiplier, addition and substraction arithmetic operation.
-The algorithm's implementation is based on 3 DSP blocks, fully pipelined and has three clocks latency. In addition butterfly's output 
-is scaled in order to avoid overflowing.
+The Butterfly implements 2-points decimation-in-time DFT algorithm. The algorithm uses complex multiplier, addition and substraction arithmetic operation.
+
 <br/>
 
 <details>
@@ -459,6 +465,25 @@ void butter_dit(T x0, T y0, T w0, T *x1, T *y1)
 </details>
 
 
+<p align="justify">
+Resource utilization and timings can be seen from Performance & Resource Estimation Fig. 3.2
+<br/>
+
+
+<p align="center">
+  <img src="https://github.com/farbius/fft-hls-python/blob/main/doc/images/btfly_resources.png" alt="butterfly"/>
+</p>
+
+<div align="center">
+<b>Figure 3.2 </b> Butterfly HLS Performance & Resource Estimation
+</div>
+<br/>
+
+
+<p align="justify">
+The algorithm's implementation is based on 3 DSP blocks, fully pipelined and has 4 clocks latency. In addition butterfly's output 
+is scaled in order to avoid overflowing.
+<br/>
 
 <br/>
 
@@ -582,6 +607,98 @@ after the last two points were read out to butterfly.
 Task-level pipelining requires so-called <i>channels</i>, that could be implemented as Ping-Pong buffers or FIFO. It is additional memory resources.
 Channels allow to align and buffer data between tasks thereby providing high task-level performance or throughput.
 
+<br/>
+
+<p align="justify">
+HLS Summary for Synthesis and Cosimulation of 16-points FFT is given below. Hardware design consists of functions (Fig. 3.3):
+
+1. <i>pop_input</i> for input data from AXI STREAM
+1. <i>reverse_stage</i> for reversing input data
+1. <i>n_stage</i> FFT stage with butterfly
+1. <i>push_output</i> for output data to AXI STREAM
+
+
+<br/>
+
+<p align="center">
+  <img src="https://github.com/farbius/fft-hls-python/blob/main/doc/images/data_flow_hls.png" alt="butterfly"/>
+</p>
+
+<div align="center">
+<b>Figure 3.3 </b> 16-points FFT HLS dataflow
+</div>
+<br/>
+
+<p align="justify">
+There are $\log_2N$ or for 16 points 4 stages of FFT. All stages and functions are working sequentially. Because of  <b>HLS DATAFLOW</b> directive each function is ready to accept new 
+data after processing of previous data is completed. Thus fully pipelined design is provided. Resource and timings estimation for the design is given on Fig. 3.4
+
+
+<br/>
+
+<p align="center">
+  <img src="https://github.com/farbius/fft-hls-python/blob/main/doc/images/hls_synthesis.png" alt="butterfly"/>
+</p>
+
+<div align="center">
+<b>Figure 3.4 </b> 16-points FFT HLS synthesis report
+</div>
+<br/>
+
+
+<p align="justify">
+The Hardware Design utilizes 21 block BRAM and 9 DSP. BRAM utilization is caused by FFT stage implementation and <b>HLS DATAFLOW</b> directive (Fig. 3.5).
+Each stage except first one (since multiplication is replaced by inversion) utilizes 3 DSP blocks for complex multiplication implementation. 
+
+<br/>
+
+<p align="center">
+  <img src="https://github.com/farbius/fft-hls-python/blob/main/doc/images/hls_bram.png" alt="butterfly"/>
+</p>
+
+<div align="center">
+<b>Figure 3.5 </b> 16-points FFT HLS BRAM Utilization
+</div>
+<br/>
+
+
+<p align="justify">
+BRAM blocks are implemented with a feature <i>ram_t2p</i> for using 2-ports with read / write capability on both.
+Cosimulation report allows to estimate performance or timings (Fig. 3.6). 
+
+<br/>
+
+<p align="center">
+  <img src="https://github.com/farbius/fft-hls-python/blob/main/doc/images/hls_cosim.png" alt="butterfly"/>
+</p>
+
+<div align="center">
+<b>Figure 3.6 </b> 16-points FFT HLS cosimulation report 
+</div>
+<br/>
+
+
+<p align="justify">
+<i>Latency</i>  means when the last output will be provided after first input (101 clock cycles in our case). <i>Interval</i> timing shows when
+the algorithm will be ready to accept a new data (17 cycles for all points). It means that after 16 words input there is a 1 cycle pause and then the algorithm is 
+ready to accept a new sequence of 16 words.
+Timings for each function of the Hardware Design can be found in Timeline Trace report (Fig. 3.7) 
+
+<br/>
+
+<p align="center">
+  <img src="https://github.com/farbius/fft-hls-python/blob/main/doc/images/hls_timeline.png" alt="butterfly"/>
+</p>
+
+<div align="center">
+<b>Figure 3.7 </b> Timeline Trace report 
+</div>
+<br/>
+
+
+<p align="justify">
+The Timeline Trace report shows performans of each function and the algorithm overall. 
+As can be seen from Fig. 3.7 the last word of output will be provided after 101 clock cycles.   
 
 
 ## References
