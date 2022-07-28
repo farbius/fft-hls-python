@@ -1,4 +1,5 @@
 
+
 # <div align="center">Fast Fourier Transform mathematical modelling and HLS implementation</div>
 
 
@@ -18,14 +19,14 @@
 ## Theory
 Discrete Fourier Transform (DFT) of a finite-length sequence of length *N* is
 
-$$X[k]  =\sum_{n=0}^{N-1}x[n] W_{N}^{kn}, \qquad k = 0,1,...,N-1.\qquad (1.1)$$
+$$X[k]  =\sum_{n=0}^{N-1}x[n] W_{N}^{nk}, \qquad k = 0,1,...,N-1.\qquad (1.1)$$
 
-where $W_{N}^{kn} = e^{-j(2\pi kn/N)}$.
+where $W_{N}^{nk} = e^{-j(2\pi{/N})nk}$.
 
 <p align="justify">
 Direct computation of $X[k]$ requires a total of $N^2$ complex multiplications and $N(N-1)$ complex additions.
-Fast Fourier Transform (FFT)  is <i>exactly</i> the same DFT with optimization by reducing number of computations.
-All optimizations for improving the efficiency of the computation are based on the symmetry and periodicity properties of   $W_{N}^{kn}$ [1], specifically,
+Fast Fourier Transform (FFT) is <i>exactly</i> the same DFT with optimization by reducing number of computations. FFT implemetation is based 
+on the symmetry and periodicity properties of $W_{N}^{kn}$ [1] and input signal decomposition. The symmetry and periodicity properties of $W_{N}^{kn}$
 
 $$W_{N}^{k[N - n]} =W_{N}^{-kn} = (W_{N}^{kn})^* \qquad (symmetry ) \qquad (1.2)$$
 
@@ -33,13 +34,32 @@ $$W_{N}^{k[N - n]} =W_{N}^{-kn} = (W_{N}^{kn})^* \qquad (symmetry ) \qquad (1.2)
 $$W_{N}^{kn} =W_{N}^{k(n+N)} = W_{N}^{(k+N)n} \qquad (periodicity) \qquad (1.3)$$
 
 
+<br/>
+
+<p align="justify">
+Decomposition is based on separation of either the input sequence (<i>decimation-in-time</i>) or output sequence (<i>decimation-in-frequency</i>) where <i>N</i> should be 
+an integer power of 2. For <i>decimation-in-time</i>  implementation the input sequence is separated into two <i>N/2</i>-point subsequences consisting of 
+the even and odd indexed samples
+
+
+$$X[k] =\sum_{n=0}^{N/2-1}x[2n] W_{N}^{2nk} + \sum_{n=0}^{N/2-1}x[2n+1] W_{N}^{(2n+1)k}$$
+
+
+with substituition $W_{N}^{2} = e^{-j(2\pi{/N})2} = e^{-j(2\pi{/N/2})} = W_{N/2}$ and representation $W_{N}^{(2n+1)k} = W_{N}^{k} W_{N}^{2nk}$ we obtain
+
+
+$$X[k] =\sum_{n=0}^{N/2-1}x[2n] W_{N/2}^{nk} + W_{N}^{k} \sum_{n=0}^{N/2-1}x[2n+1] W_{N/2}^{nk} = X_{1}(k) + W_{N}^{k} X_{2}(k) $$
+
+
+where $X_{1}(k)$ and $X_{2}(k)$ 
+
 For explanation let's consider direct calculation of two samples of  $X[k]$ from Eq. (1.1) for $N=8$
 
 $$X[2]  =x[0] W_{8}^{0} + x[1] W_{8}^{2} + x[2] W_{8}^{4}+x[3] W_{8}^{6} + x[4] W_{8}^{8} + x[5] W_{8}^{10}+ x[6] W_{8}^{12} + x[7] W_{8}^{14} \qquad$$
 
 $$X[3]  =x[0] W_{8}^{0} + x[1] W_{8}^{3} + x[2] W_{8}^{6}+x[3] W_{8}^{9} + x[4] W_{8}^{12} + x[5] W_{8}^{15}+ x[6] W_{8}^{18} + x[7] W_{8}^{21} \qquad$$
 
-By using the periodicity property of   $W_{N}^{kn}$ and the fact that  $W_{N}^{N/2} =  e^{-j(2\pi/N)N/2}=-1$, we obtain
+By using the periodicity property of $W_{N}^{kn}$ and the fact that  $W_{N}^{N/2} =  e^{-j(2\pi/N)N/2}=-1$, we obtain
 
 $$X[2]  =x[0] W_{8}^{0} + x[1] W_{8}^{2} - x[2] W_{8}^{0}-x[3] W_{8}^{2} + x[4] W_{8}^{0} + x[5] W_{8}^{2}- x[6] W_{8}^{0} - x[7] W_{8}^{2} \qquad$$
 
